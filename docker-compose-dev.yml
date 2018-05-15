@@ -1,0 +1,42 @@
+version: "2.1"
+
+services:
+
+  postgres_documents_service:
+    container_name: postgres_documents_service
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: documents_service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    restart: always
+
+  documents_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: documents_service
+    image: documents_service
+    volumes:
+      - .:/code
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres_documents_service
+    environment:
+      - DATABASE_ENGINE=postgresql
+      - DATABASE_NAME=documents_service
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_HOST=postgres_documents_service
+      - DATABASE_PORT=5432
+      - DEBUG=True

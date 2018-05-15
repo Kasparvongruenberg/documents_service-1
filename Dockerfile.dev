@@ -1,0 +1,13 @@
+FROM python:3.6
+
+WORKDIR /code
+
+COPY ./requirements/base.txt requirements/base.txt
+COPY ./requirements/dev.txt requirements/dev.txt
+COPY ./requirements/production.txt requirements/production.txt
+
+RUN pip install -r requirements/dev.txt
+
+ADD . /code
+
+ENTRYPOINT ["/code/docker-entrypoint-dev.sh"]
