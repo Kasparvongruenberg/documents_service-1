@@ -30,16 +30,28 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS_DJANGO = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
+INSTALLED_APPS_THIRD_PARTIES = [
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
+    'django_boto',
 ]
+
+INSTALLED_APPS_LOCAL = [
+    'api',
+    'documents',
+]
+
+INSTALLED_APPS = INSTALLED_APPS_DJANGO + INSTALLED_APPS_THIRD_PARTIES + \
+                 INSTALLED_APPS_LOCAL
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,8 +89,12 @@ WSGI_APPLICATION = 'documents-service.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.{}'.format(os.environ['DATABASE_ENGINE']),
+        'NAME': os.environ['DATABASE_NAME'],
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+        'PORT': os.environ['DATABASE_PORT'],
     }
 }
 
@@ -145,3 +161,17 @@ REST_FRAMEWORK = {
         'api.permissions.IsSuperUserBrowseableAPI',
     )
 }
+
+########## MEDIA CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
+MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+MEDIA_URL = '/media/'
+########## END MEDIA CONFIGURATION
+
+# AWS Configuration
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+BOTO_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+BOTO_BUCKET_LOCATION = 'eu-central-1'
