@@ -10,23 +10,6 @@ from ..models import Document
 
 
 class DocumentTest(TestCase):
-    def setUp(self):
-        pass
-
-    def assertRaisesWithMessage(self, exc, msg, func, *args, **kwargs):
-        try:
-            func(*args, **kwargs)
-            self.assertFail()
-        except exc as inst:
-            self.assertIn(msg, inst.messages)
-
-    def assertRaisesWithMessageDict(self, exc, msg, func, *args, **kwargs):
-        try:
-            func(*args, **kwargs)
-            self.assertFail()
-        except exc as inst:
-            self.assertEqual(msg, inst.message_dict)
-
     def test_document_save_required_fields(self):
         file_name = "Test File 1.jpg"
 

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Document
 
 
-class DocumentSerializer(serializers.HyperlinkedModelSerializer):
+class DocumentSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     uuid = serializers.ReadOnlyField()
     upload_date = serializers.ReadOnlyField()
