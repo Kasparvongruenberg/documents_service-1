@@ -1,0 +1,61 @@
+---
+pipeline:
+  test:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pip install -r requirements/ci.txt
+      - flake8 --exclude=settings,migrations
+      - ./tcp-port-wait.sh postgres 5432
+      - coverage run --source='.' manage.py test -v 2
+      - coverage report -m
+    when:
+      event: [pull_request, push, tag]
+    environment:
+      - DATABASE_ENGINE=postgresql
+      - DATABASE_NAME=documents_service
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_HOST=postgres_documents_service
+      - DATABASE_PORT=5432
+
+  bandit:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pip install bandit
+      - bandit -x tests/ -r -lll .
+    when:
+      event: [pull_request, push, tag]
+
+  build-docker-image-tag:
+    image: plugins/docker
+    insecure: true
+    registry: registry.tola.io
+    repo: registry.tola.io/toladata/documents_service
+    file: Dockerfile
+    auto_tag: true
+    secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
+    when:
+      event: [tag]
+      status: [success]
+
+  notify:
+    image: plugins/slack
+    channel: drone-ci
+    username: Drone-CI
+    secrets: [SLACK_WEBHOOK]
+    when:
+      event: [push, tag]
+      branch: [master, demo, staging, dev]
+      status: [failure]
+
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_DB=documents_service
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+
+matrix:
+  PYTHON_VERSION:
+    - 3.6

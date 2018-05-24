@@ -23,3 +23,5 @@ To run the tests:
 ```bash
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm documents_service python manage.py test # --keepdb to run second time faster
 ```
+
+## Deploy to server
