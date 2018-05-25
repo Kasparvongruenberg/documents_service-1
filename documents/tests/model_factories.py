@@ -8,6 +8,8 @@ import uuid
 from ..models import Document as DocumentM
 
 # Todo use moto==1.3.3 to test with aws boto file interface
+
+
 class Document(DjangoModelFactory):
     class Meta:
         model = DocumentM

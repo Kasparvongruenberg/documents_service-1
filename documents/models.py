@@ -25,8 +25,7 @@ s3 = S3Storage()
 
 def make_filepath(field_name, instance, filename):
     now = timezone.now()
-    new_filename = "%s.%s" % (uuid.uuid4(),
-                             filename.split('.')[-1])
+    new_filename = "%s.%s" % (uuid.uuid4(), filename.split('.')[-1])
     filepath = "uploads/%s-%s/%s/" % (now.year, now.month, now.day)
     return filepath+new_filename
 
@@ -52,7 +51,7 @@ class Document(models.Model):
     organization_uuid = models.CharField(max_length=36, blank=True, null=True,
                                          verbose_name='Organization UUID')
     user_uuid = models.CharField(max_length=36, blank=True, null=True,
-                                         verbose_name='User UUID')
+                                 verbose_name='User UUID')
 
     workflowlevel1_uuids = ArrayField(models.CharField(max_length=36),
                                       blank=True, null=True,
@@ -68,7 +67,7 @@ class Document(models.Model):
             raise ValidationError('Invalid File Type.'
                                   'Allowed File Types: {}'.format(
                                     ', '.join([ft[0] for ft in
-                                        FILE_TYPE_CHOICES])))
+                                               FILE_TYPE_CHOICES])))
 
     def save(self, *args, **kwargs):
         self.file_type = self.file_name.lower().split('.')[-1]

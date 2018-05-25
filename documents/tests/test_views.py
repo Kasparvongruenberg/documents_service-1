@@ -2,10 +2,7 @@
 from datetime import datetime
 import uuid
 
-from django.conf import settings
 from django.test import TestCase
-import pytz
-from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 from django.core.exceptions import ValidationError
 
@@ -30,6 +27,7 @@ class DocumentListViewsTest(TestCase):
     def test_list_documents(self):
         request = self.factory.get('')
         request.user = self.user
+        mfactories.Document()
         view = DocumentViewSet.as_view({'get': 'list'})
         response = view(request)
 
@@ -38,7 +36,7 @@ class DocumentListViewsTest(TestCase):
 
         document_data = response.data[0]
         self.assertTrue('id' in document_data)
-        self.assertEqual(document_data['file_name'], 'Testfile.pdf')
+        self.assertEqual(document_data['file_name'], 'test.jpg')
 
     def test_list_documents_anonymoususer(self):
         request_get = self.factory.get('')
@@ -157,6 +155,7 @@ class DocumentCreateViewsTest(TestCase):
         except ValidationError:
             pass
 
+
 class DocumentUpdateViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -207,7 +206,6 @@ class DocumentUpdateViewsTest(TestCase):
             self.fail()
         except ValidationError:
             pass
-
 
     def test_update_document_anonymoususer_forbidden(self):
         request = self.factory.post('', {})

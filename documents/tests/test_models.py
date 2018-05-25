@@ -15,7 +15,7 @@ class DocumentTest(TestCase):
 
         document = Document.objects.create(
             file_name=file_name,
-            workflowlevel1_uuids= [str(uuid.uuid4())]
+            workflowlevel1_uuids=[str(uuid.uuid4())]
         )
 
         document_db = Document.objects.get(pk=document.pk)
@@ -31,8 +31,6 @@ class DocumentTest(TestCase):
             organization_uuid="TestUUID",
             workflowlevel1_uuids=['TestWF1UUID'],
             workflowlevel2_uuids=['TestWF2UUID'],
-            s3_file_key='TESTKEY',
-            s3_bucket='TESTBUCKET',
         )
 
         document_db = Document.objects.get(pk=document.pk)
@@ -40,8 +38,6 @@ class DocumentTest(TestCase):
         self.assertEqual(document_db.organization_uuid, 'TestUUID')
         self.assertEqual(document_db.workflowlevel1_uuids, ['TestWF1UUID'])
         self.assertEqual(document_db.workflowlevel2_uuids, ['TestWF2UUID'])
-        self.assertEqual(document_db.s3_file_key, 'TESTKEY')
-        self.assertEqual(document_db.s3_bucket, 'TESTBUCKET')
 
     def test_document_save_fails_missing_filename(self):
         document = Document(
