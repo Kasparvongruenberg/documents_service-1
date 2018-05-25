@@ -2,9 +2,16 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
-import django_boto.s3.storage
+
 import documents.models
 import functools
+
+try:
+    from django_boto.s3.storage import S3Storage
+    file_storage = S3Storage()
+except AttributeError:
+    from django.core.files.storage import FileSystemStorage
+    file_storage = FileSystemStorage('/media/uploads/')
 
 
 class Migration(migrations.Migration):
@@ -22,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='file',
-            field=models.FileField(blank=True, null=True, storage=django_boto.s3.storage.S3Storage(), upload_to=functools.partial(documents.models.make_filepath, *('file',), **{})),
+            field=models.FileField(blank=True, null=True, storage=file_storage, upload_to=functools.partial(documents.models.make_filepath, *('file',), **{})),
         ),
         migrations.AlterField(
             model_name='document',

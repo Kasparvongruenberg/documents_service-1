@@ -5,7 +5,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from django_boto.s3.storage import S3Storage
 from functools import partial
 
 try:
@@ -13,14 +12,18 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 
+try:
+    from django_boto.s3.storage import S3Storage
+    file_storage = S3Storage()
+except AttributeError:
+    from django.core.files.storage import FileSystemStorage
+    file_storage = FileSystemStorage('/media/uploads/')
 
 FILE_TYPE_CHOICES = (
     ('jpg', 'JPG Image'),
     ('png', 'PNG Image'),
     ('pdf', 'PDF File'),
 )
-
-s3 = S3Storage()
 
 
 def make_filepath(field_name, instance, filename):
@@ -42,7 +45,7 @@ class Document(models.Model):
     file = models.FileField(upload_to=partial(make_filepath, 'file'),
                             null=True,
                             blank=True,
-                            storage=s3)
+                            storage=file_storage)
 
     create_date = models.DateTimeField(null=True, blank=True)
     upload_date = models.DateTimeField(null=True, blank=True,
