@@ -25,3 +25,18 @@ docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm do
 ```
 
 ## Deploy to server
+
+### Environment Variables
+The following environment variables need to be configured in  order to make 
+the service work correctly:
+* `DATABASE_ENGINE` 
+* `DATABASE_NAME` 
+* `DATABASE_USER` 
+* `DATABASE_PASSWORD` 
+* `DATABASE_PORT` and `DATABASE_HOST` are optional
+ 
+ If AWS S3 Buckets should be used for storing documents the following 
+ settings are required as well:
+ * `AWS_ACCESS_KEY_ID`
+ * `AWS_ACCESS_KEY_SECRET`
+ * `AWS_S3_BUCKET`
