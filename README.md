@@ -29,6 +29,7 @@ docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm do
 ### Environment Variables
 The following environment variables need to be configured in  order to make 
 the service work correctly:
+* `ALLOWED_HOSTS`
 * `DATABASE_ENGINE` 
 * `DATABASE_NAME` 
 * `DATABASE_USER` 

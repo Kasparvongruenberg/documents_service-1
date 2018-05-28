@@ -25,8 +25,10 @@ SECRET_KEY = 'h6ghqy_)k2et32votq!2z5d7p%fbpde)q#uwmu4!3de6r9i2#0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if os.getenv('DEBUG') == 'False' else True
 
-ALLOWED_HOSTS = []
-
+try:
+    ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(',')
+except KeyError:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -43,6 +45,10 @@ INSTALLED_APPS_THIRD_PARTIES = [
     'rest_framework.authtoken',
     'django_filters',
     'django_boto',
+
+    # health check
+    'health_check',  # required
+    'health_check.db',  # stock Django health checkers
 ]
 
 INSTALLED_APPS_LOCAL = [
