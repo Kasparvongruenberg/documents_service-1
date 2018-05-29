@@ -32,6 +32,8 @@ except KeyError:
 
 # Application definition
 
+STATIC_ROOT = './static/'
+
 INSTALLED_APPS_DJANGO = [
     'django.contrib.admin',
     'django.contrib.auth',
