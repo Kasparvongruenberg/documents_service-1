@@ -4,6 +4,7 @@ pipeline:
     image: python:${PYTHON_VERSION}
     commands:
       - pip install -r requirements/ci.txt
+      - ./collectstatic.sh
       - flake8 --exclude=settings,migrations
       - ./tcp-port-wait.sh postgres 5432
       - coverage run --source='.' manage.py test -v 2
@@ -32,6 +33,18 @@ pipeline:
     registry: registry.tola.io
     repo: registry.tola.io/toladata/documents_service
     file: Dockerfile
+    auto_tag: true
+    secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
+    when:
+      event: [tag]
+      status: [success]
+
+  build-docker-static-image-tag:
+    image: plugins/docker
+    insecure: true
+    registry: registry.tola.io
+    repo: registry.tola.io/toladata/documents_service_static
+    file: Dockerfile.nginx
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
