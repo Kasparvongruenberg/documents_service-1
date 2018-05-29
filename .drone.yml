@@ -44,7 +44,7 @@ pipeline:
     insecure: true
     registry: registry.tola.io
     repo: registry.tola.io/toladata/documents_service_static
-    file: Dockerfile.nginx
+    dockerfile: Dockerfile.nginx
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
