@@ -82,3 +82,135 @@ class DocumentTest(TestCase):
         )
 
         self.assertRaises(ValidationError, document.save)
+
+    def test_document_save_file_type_jpg(self):
+        file_name = "Test File 1.jpg"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_jpeg(self):
+        file_name = "Test File 1.jpeg"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_png(self):
+        file_name = "Test File 1.png"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_gif(self):
+        file_name = "Test File 1.gif"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_pdf(self):
+        file_name = "Test File 1.pdf"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_txt(self):
+        file_name = "Test File 1.txt"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_doc(self):
+        file_name = "Test File 1.doc"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_docx(self):
+        file_name = "Test File 1.docx"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_xls(self):
+        file_name = "Test File 1.xls"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_xlsx(self):
+        file_name = "Test File 1.xlsx"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_ppt(self):
+        file_name = "Test File 1.ppt"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)
+
+    def test_document_save_file_type_pptx(self):
+        file_name = "Test File 1.pptx"
+
+        document = Document.objects.create(
+            file_name=file_name,
+            workflowlevel1_uuids=[str(uuid.uuid4())]
+        )
+
+        document_db = Document.objects.get(pk=document.pk)
+        self.assertEqual(document_db.file_name, file_name)

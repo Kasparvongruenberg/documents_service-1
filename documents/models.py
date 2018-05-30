@@ -21,8 +21,17 @@ except AttributeError:
 
 FILE_TYPE_CHOICES = (
     ('jpg', 'JPG Image'),
+    ('jpeg', 'JPEG Image'),
     ('png', 'PNG Image'),
-    ('pdf', 'PDF File'),
+    ('gif', 'GIF File'),
+    ('pdf', 'PDF Document'),
+    ('txt', 'TXT File'),
+    ('doc', 'doc Document'),
+    ('docx', 'docx Document'),
+    ('xls', 'xls File'),
+    ('xlsx', 'xlsx File'),
+    ('ppt', 'ppt Document'),
+    ('pptx', 'pptx Document'),
 )
 
 
