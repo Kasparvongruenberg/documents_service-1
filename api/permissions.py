@@ -1,12 +1,8 @@
-from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 
-class IsSuperUserBrowseableAPI(permissions.BasePermission):
-
+class AllowOptionsAuthentication(IsAuthenticated):
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            if view.__class__.__name__ == 'SchemaView':
-                return request.user.is_superuser
-            else:
-                return True
-        return False
+        if request.method == 'OPTIONS':
+            return True
+        return request.user and request.user.is_authenticated
