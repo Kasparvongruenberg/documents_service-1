@@ -10,6 +10,6 @@ export DEFAULT_FROM_EMAIL=nothing
 export DEFAULT_REPLY_TO=nothing
 
 export DATABASE_ENGINE=postgresql
-export DJANGO_SETTINGS_MODULE=documents-service.settings
+export DJANGO_SETTINGS_MODULE=documents-service.settings.base
 
 python manage.py collectstatic --no-input

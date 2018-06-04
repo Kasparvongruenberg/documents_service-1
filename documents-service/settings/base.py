@@ -25,13 +25,12 @@ SECRET_KEY = 'h6ghqy_)k2et32votq!2z5d7p%fbpde)q#uwmu4!3de6r9i2#0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False if os.getenv('DEBUG') == 'False' else True
 
-try:
-    ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(',')
-except KeyError:
-    ALLOWED_HOSTS = []
-
 # Application definition
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
+
+STATIC_URL = '/static/'
 STATIC_ROOT = './static/'
 
 INSTALLED_APPS_DJANGO = [
@@ -143,24 +142,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
-
-# NGINX and HTTPS
-# https://docs.djangoproject.com/en/1.11/ref/
-# settings/#std:setting-USE_X_FORWARDED_HOST
-
-USE_X_FORWARDED_HOST = True if os.getenv('USE_X_FORWARDED_HOST') == 'True' \
-    else False
-
-# https://docs.djangoproject.com/en/1.11/ref/settings/#secure-proxy-ssl-header
-
-if os.getenv('USE_HTTPS') == 'True':
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Rest Framework
