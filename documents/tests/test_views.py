@@ -74,6 +74,9 @@ class DocumentCreateViewsTest(TestCase):
 
         data = {
             'file_name': u'Testfile.pdf',
+            'file': 'data:image/png;base64,'
+                    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
+                    '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
             'workflowlevel1_uuids': [str(uuid.uuid4())],
         }
 
@@ -95,7 +98,10 @@ class DocumentCreateViewsTest(TestCase):
         organization_uuid = str(uuid.uuid4())
 
         data = {
-            'file_name': u'Testfile.pdf',
+            'file_name': u'Testfile.png',
+            'file': 'data:image/png;base64,'
+                    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
+                    '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
             'create_date': create_date,
             'workflowlevel1_uuids': workflowlevel1_uuids,
             'workflowlevel2_uuids': workflowlevel2_uuids,
@@ -111,7 +117,7 @@ class DocumentCreateViewsTest(TestCase):
         document = Document.objects.get(id=data['id'])
         self.assertEqual(response.status_code, 201)
         self.assertEqual(document.file_name, data['file_name'])
-        self.assertEqual(document.file_type, 'pdf')
+        self.assertEqual(document.file_type, 'png')
         self.assertEqual(document.create_date.strftime(
             "%Y-%m-%dT%H:%M:%SZ"), data['create_date'])
         self.assertEqual(document.workflowlevel1_uuids, workflowlevel1_uuids)
@@ -143,6 +149,9 @@ class DocumentCreateViewsTest(TestCase):
     def test_create_document_fails_invalid_file_type(self):
         data = {
             'file_name': u'Testfile.exe',
+            'file': 'data:image/png;base64,'
+                    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
+                    '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
             'workflowlevel1_uuids': [str(uuid.uuid4())],
         }
 
