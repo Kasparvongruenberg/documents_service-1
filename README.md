@@ -24,6 +24,13 @@ To run the tests:
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm documents_service python manage.py test # --keepdb to run second time faster
 ```
 
+To run flake8:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint 'flake8 --exclude=settings,migrations' documents_service
+```
+
+
 ## Deploy to server
 
 ### Environment Variables
