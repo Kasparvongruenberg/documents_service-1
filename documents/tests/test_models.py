@@ -23,9 +23,11 @@ class DocumentTest(TestCase):
 
     def test_document_save_all_fields(self):
         file_name = "Test File 1.jpg"
+        file_description = "Test File 1"
 
         document = Document.objects.create(
             file_name=file_name,
+            file_description=file_description,
             file_type='jpg',
             upload_date=datetime(2018, 1, 1, 12, 30, tzinfo=pytz.UTC),
             organization_uuid="TestUUID",
@@ -35,6 +37,7 @@ class DocumentTest(TestCase):
 
         document_db = Document.objects.get(pk=document.pk)
         self.assertEqual(document_db.file_name, file_name)
+        self.assertEqual(document_db.file_description, file_description)
         self.assertEqual(document_db.organization_uuid, 'TestUUID')
         self.assertEqual(document_db.workflowlevel1_uuids, ['TestWF1UUID'])
         self.assertEqual(document_db.workflowlevel2_uuids, ['TestWF2UUID'])
