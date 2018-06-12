@@ -44,6 +44,66 @@ class DocumentListViewsTest(TestCase):
         response = view(request_get)
         self.assertEqual(response.status_code, 403)
 
+    def test_list_documents_filter_by_file_type(self):
+        mfactories.Document(file_name='Document1.png')
+        mfactories.Document(file_name='Document2.png')
+        mfactories.Document(file_name='Document3.jpg')
+
+        request = self.factory.get('?file_type={}'.format('png'))
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        document_data = response.data[0]
+        self.assertEqual(document_data['file_type'], 'png')
+        self.assertEqual(response.data[0]['file_name'], 'Document1.png')
+        self.assertEqual(response.data[1]['file_name'], 'Document2.png')
+
+    def test_list_documents_filter_by_related_wf1(self):
+        wf1uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
+
+        mfactories.Document(file_name='Document1.png',
+                            workflowlevel1_uuids=wf1uuids)
+        mfactories.Document(file_name='Document2.png',
+                            workflowlevel1_uuids=wf1uuids)
+        mfactories.Document(file_name='Document3.jpg')
+
+        request = self.factory.get('?workflowlevel1_uuid={}'.format(
+            wf1uuids[0]))
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        self.assertEqual(response.data[0]['file_name'], 'Document1.png')
+        self.assertEqual(response.data[1]['file_name'], 'Document2.png')
+
+    def test_list_documents_filter_by_related_wf2(self):
+        wf2uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
+
+        mfactories.Document(file_name='Document1.png')
+        mfactories.Document(file_name='Document2.png',
+                            workflowlevel2_uuids=wf2uuids)
+        mfactories.Document(file_name='Document3.jpg',
+                            workflowlevel2_uuids=wf2uuids)
+
+        request = self.factory.get('?workflowlevel2_uuid={}'.format(
+            wf2uuids[0]))
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
+        self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
+
 
 class DocumentRetrieveViewsTest(TestCase):
     def setUp(self):
