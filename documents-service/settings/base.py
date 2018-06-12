@@ -41,6 +41,7 @@ INSTALLED_APPS_DJANGO = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
 INSTALLED_APPS_THIRD_PARTIES = [
     'rest_framework',
     'rest_framework.authtoken',
@@ -153,6 +154,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        'oauth2_provider_jwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'api.permissions.AllowOptionsAuthentication',
@@ -172,3 +174,8 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_SECRET')
 BOTO_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 BOTO_BUCKET_LOCATION = 'eu-central-1'
+
+# JWT Configuration
+
+JWT_ALLOWED_ISSUER = 'activityapi'
+JWT_PUBLIC_KEY_RSA_ACTIVITYAPI = os.getenv('JWT_PUBLIC_KEY_RSA_ACTIVITYAPI')
