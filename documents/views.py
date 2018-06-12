@@ -1,7 +1,9 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .models import Document
 from .serializers import DocumentSerializer
+import django_filters
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -12,8 +14,28 @@ class DocumentViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return super(DocumentViewSet, self).update(request, *args, **kwargs)
 
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+
+        workflowlevel1_uuid = self.request.query_params.get(
+            'workflowlevel1_uuid', None)
+        if workflowlevel1_uuid is not None:
+            queryset = queryset.filter(
+                workflowlevel1_uuids__contains=[workflowlevel1_uuid])
+
+        workflowlevel2_uuid = self.request.query_params.get(
+            'workflowlevel2_uuid', None)
+        if workflowlevel2_uuid is not None:
+            queryset = queryset.filter(
+                workflowlevel2_uuids__contains=[workflowlevel2_uuid])
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     ordering_fields = ('id', 'upload_date', 'create_date')
     ordering = ('id',)
     filter_fields = ('file_type',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
