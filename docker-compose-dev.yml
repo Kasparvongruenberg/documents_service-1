@@ -33,10 +33,15 @@ services:
     depends_on:
       - postgres_documents_service
     environment:
-      - DATABASE_ENGINE=postgresql
-      - DATABASE_NAME=documents_service
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=root
-      - DATABASE_HOST=postgres_documents_service
-      - DATABASE_PORT=5432
-      - DEBUG=True
+      DATABASE_ENGINE: "postgresql"
+      DATABASE_NAME: "documents_service"
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "root"
+      DATABASE_HOST: "postgres_documents_service"
+      DATABASE_PORT: "5432"
+      DEBUG: "True"
+      JWT_PUBLIC_KEY_RSA_ACTIVITYAPI: |-
+        -----BEGIN PUBLIC KEY-----
+        MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAaMvu50RBLcG8UmCMW9VC8j7VQrvrJ4W3
+        QfHTS9mIWJ33OwbfvOccVhR78y9PpOPwvVU5ZAuqJUeFYexqmP8vAwIDAQAB
+        -----END PUBLIC KEY-----
