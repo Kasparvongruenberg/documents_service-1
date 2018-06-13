@@ -104,6 +104,27 @@ class DocumentListViewsTest(TestCase):
         self.assertEqual(response.data[0]['file_name'], 'Document2.png')
         self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
 
+    def test_list_documents_filter_by_related_contact(self):
+        contact_uuid = str(uuid.uuid4())
+
+        mfactories.Document(file_name='Document1.png')
+        mfactories.Document(file_name='Document2.png',
+                            contact_uuid=contact_uuid)
+        mfactories.Document(file_name='Document3.jpg',
+                            contact_uuid=contact_uuid)
+
+        request = self.factory.get('?contact_uuid={}'.format(
+            contact_uuid))
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
+        self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
+
 
 class DocumentRetrieveViewsTest(TestCase):
     def setUp(self):
@@ -131,6 +152,7 @@ class DocumentCreateViewsTest(TestCase):
         self.user = mfactories.User()
 
     def test_create_document_minimal(self):
+        contact_uuid = str(uuid.uuid4())
 
         data = {
             'file_name': u'Testfile.pdf',
@@ -138,6 +160,7 @@ class DocumentCreateViewsTest(TestCase):
                     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
                     '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
             'workflowlevel1_uuids': [str(uuid.uuid4())],
+            'contact_uuid': contact_uuid,
         }
 
         request = self.factory.post('', data)
@@ -149,6 +172,7 @@ class DocumentCreateViewsTest(TestCase):
         document = Document.objects.get(id=response.data['id'])
         self.assertEqual(document.file_name, data['file_name'])
         self.assertEqual(document.file_type, 'pdf')
+        self.assertEqual(document.contact_uuid, contact_uuid)
 
     def test_create_document(self):
         create_date = datetime(2018, 1, 1, 12, 15)\
@@ -156,6 +180,7 @@ class DocumentCreateViewsTest(TestCase):
         workflowlevel1_uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
         workflowlevel2_uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
         organization_uuid = str(uuid.uuid4())
+        contact_uuid = str(uuid.uuid4())
 
         data = {
             'file_name': u'Testfile.png',
@@ -166,6 +191,7 @@ class DocumentCreateViewsTest(TestCase):
             'workflowlevel1_uuids': workflowlevel1_uuids,
             'workflowlevel2_uuids': workflowlevel2_uuids,
             'organization_uuid': organization_uuid,
+            'contact_uuid': contact_uuid,
         }
         request = self.factory.post('', data)
         request.user = self.user
@@ -183,6 +209,7 @@ class DocumentCreateViewsTest(TestCase):
         self.assertEqual(document.workflowlevel1_uuids, workflowlevel1_uuids)
         self.assertEqual(document.workflowlevel2_uuids, workflowlevel2_uuids)
         self.assertEqual(document.organization_uuid, organization_uuid)
+        self.assertEqual(document.contact_uuid, contact_uuid)
 
     def test_create_document_anonymoususer(self):
         request = self.factory.post('', {})
@@ -194,10 +221,12 @@ class DocumentCreateViewsTest(TestCase):
         create_date = datetime(2018, 1, 1, 12, 15)\
             .strftime("%Y-%m-%dT%H:%M:%S+01:00")
         workflowlevel1_uuids = [uuid.uuid4(), uuid.uuid4()]
+        contact_uuid = str(uuid.uuid4())
 
         data = {
             'create_date': create_date,
             'workflowlevel1_uuids': workflowlevel1_uuids,
+            'contact_uuid': contact_uuid,
         }
 
         request = self.factory.post('', data)
@@ -207,12 +236,14 @@ class DocumentCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_create_document_fails_invalid_file_type(self):
+        contact_uuid = str(uuid.uuid4())
         data = {
             'file_name': u'Testfile.exe',
             'file': 'data:image/png;base64,'
                     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
                     '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
             'workflowlevel1_uuids': [str(uuid.uuid4())],
+            'contact_uuid': contact_uuid,
         }
 
         request = self.factory.post('', data)

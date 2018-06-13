@@ -18,6 +18,7 @@ class Document(DjangoModelFactory):
     file_type = Iterator(['jpg', 'png', 'pdf'])
     workflowlevel1_uuids = [str(uuid.uuid4())]
     workflowlevel2_uuids = [str(uuid.uuid4())]
+    contact_uuid = str(uuid.uuid4())
 
     upload_date = datetime(2018, 1, 1, 12, 30, tzinfo=pytz.UTC)
     create_date = datetime(2018, 1, 1, 15, 15, tzinfo=pytz.UTC)
