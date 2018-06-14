@@ -35,7 +35,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     ordering_fields = ('id', 'upload_date', 'create_date')
     ordering = ('id',)
-    filter_fields = ('file_type',)
+    filter_fields = ('file_type', 'contact_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
