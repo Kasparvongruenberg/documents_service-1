@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from . import model_factories as mfactories
 from ..models import Document
 from ..views import DocumentViewSet
+import re
 
 
 class DocumentListViewsTest(TestCase):
@@ -124,6 +125,58 @@ class DocumentListViewsTest(TestCase):
 
         self.assertEqual(response.data[0]['file_name'], 'Document2.png')
         self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
+
+    def test_paginate_large_result_sets(self):
+        for i in range(0, 32):
+            mfactories.Document(file_name='Document{}.png'.format(i))
+
+        request = self.factory.get('?paginate=true')
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['results']), 30)
+        self.assertIsNotNone(response.data['next'])
+        self.assertIsNone(response.data['previous'])
+
+        m = re.search('=(.*)&', response.data['next'])
+        cursor = m.group(1)
+
+        page2_request = self.factory.get('?cursor={}&paginate=true'.format(
+            cursor))
+        page2_request.user = self.user
+        page2_response = view(page2_request)
+        self.assertEqual(page2_response.status_code, 200)
+        self.assertEqual(len(page2_response.data['results']), 2)
+        self.assertIsNone(page2_response.data['next'])
+        self.assertIsNotNone(page2_response.data['previous'])
+
+    def test_paginate_large_result_sets_max_size(self):
+        for i in range(0, 102):
+            mfactories.Document(file_name='Document{}.png'.format(i))
+
+        request = self.factory.get('?paginate=true&page_size=100')
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['results']), 100)
+        self.assertIsNotNone(response.data['next'])
+        self.assertIsNone(response.data['previous'])
+
+        m = re.search('=(.*)&', response.data['next'])
+        cursor = m.group(1)
+
+        page2_request = self.factory.get('?cursor={}&paginate=true'.format(
+            cursor))
+        page2_request.user = self.user
+        page2_response = view(page2_request)
+        self.assertEqual(page2_response.status_code, 200)
+        self.assertEqual(len(page2_response.data['results']), 2)
+        self.assertIsNone(page2_response.data['next'])
+        self.assertIsNotNone(page2_response.data['previous'])
 
 
 class DocumentRetrieveViewsTest(TestCase):

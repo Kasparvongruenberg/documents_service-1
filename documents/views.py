@@ -30,6 +30,14 @@ class DocumentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 workflowlevel2_uuids__contains=[workflowlevel2_uuid])
 
+        paginate = request.GET.get('paginate')
+        if paginate and (paginate.lower() == 'true' or paginate == '1'):
+            # Add this or pagination will not be available
+            page = self.paginate_queryset(queryset)
+            if page:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
