@@ -148,7 +148,8 @@ USE_TZ = True
 # Rest Framework
 
 REST_FRAMEWORK = {
-    'PAGINATE_BY': 10,
+    'DEFAULT_PAGINATION_CLASS':
+        'documents-service.pagination.DefaultCursorPagination',
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_AUTHENTICATION_CLASSES': (
