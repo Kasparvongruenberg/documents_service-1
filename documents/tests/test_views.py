@@ -178,6 +178,22 @@ class DocumentListViewsTest(TestCase):
         self.assertIsNone(page2_response.data['next'])
         self.assertIsNotNone(page2_response.data['previous'])
 
+    def test_list_documents_ordering(self):
+        for i in range(0, 3):
+            mfactories.Document(file_name='Document{}.png'.format(i))
+
+        request = self.factory.get('?ordering=-id')
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
+
+        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
+        self.assertEqual(response.data[1]['file_name'], 'Document1.png')
+        self.assertEqual(response.data[2]['file_name'], 'Document0.png')
+
 
 class DocumentRetrieveViewsTest(TestCase):
     def setUp(self):

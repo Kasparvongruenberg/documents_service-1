@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.response import Response
 
 from .models import Document
@@ -44,6 +44,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'upload_date', 'create_date')
     ordering = ('id',)
     filter_fields = ('file_type', 'contact_uuid')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,
+                       filters.OrderingFilter)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
