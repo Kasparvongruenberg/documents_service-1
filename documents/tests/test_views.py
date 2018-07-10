@@ -7,9 +7,12 @@ from rest_framework.test import APIRequestFactory
 from django.core.exceptions import ValidationError
 
 from . import model_factories as mfactories
-from ..models import Document
+from ..models import Document, timezone
 from ..views import DocumentViewSet
 import re
+import mock
+from django.core.files import File
+from django.test.utils import override_settings
 
 
 class DocumentListViewsTest(TestCase):
@@ -193,6 +196,34 @@ class DocumentListViewsTest(TestCase):
         self.assertEqual(response.data[0]['file_name'], 'Document2.png')
         self.assertEqual(response.data[1]['file_name'], 'Document1.png')
         self.assertEqual(response.data[2]['file_name'], 'Document0.png')
+
+    @override_settings(AWS_ACCESS_KEY_ID='dummy')
+    @override_settings(AWS_SECRET_ACCESS_KEY='ex123')
+    @override_settings(BOTO_S3_BUCKET='example')
+    @override_settings(BOTO_S3_HOST='example.com')
+    def test_list_documents_url(self):
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.jpg'
+
+        mfactories.Document(file_name='Document1.png',
+                            file=file_mock)
+
+        mfactories.Document(file_name='Document2.png')
+
+        request = self.factory.get('')
+        request.user = self.user
+        view = DocumentViewSet.as_view({'get': 'list'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        now = timezone.now()
+        expected_file = "https://example.example.com/uploads/" \
+                        "%s-%s/%s/\S{36}.jpg" % (now.year, now.month, now.day)
+
+        self.assertRegexpMatches(response.data[0]['file'], expected_file)
+        self.assertIsNone(response.data[1]['file'])
 
 
 class DocumentRetrieveViewsTest(TestCase):
