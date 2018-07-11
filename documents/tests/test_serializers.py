@@ -3,7 +3,6 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
 from . import model_factories as mfactories
-from ..models import timezone
 
 from ..serializers import DocumentSerializer
 
@@ -57,12 +56,10 @@ class DocumentSerializerTest(TestCase):
         self.document = mfactories.Document(file_name='Document1.jpg',
                                             file=file_mock)
 
-        now = timezone.now()
-        expected_file = "https://example.example.com/uploads/" \
-                        "%s-%s/%s/\S{36}.jpg" % (now.year, now.month, now.day)
+        expected_file = "/file/{}".format(self.document.pk)
 
         serializer = DocumentSerializer(instance=self.document)
-        self.assertRegexpMatches(serializer.data['file'], expected_file)
+        self.assertEquals(serializer.data['file'], expected_file)
 
     def test_without_file(self):
         self.document = mfactories.Document(file_name='Document1.jpg',

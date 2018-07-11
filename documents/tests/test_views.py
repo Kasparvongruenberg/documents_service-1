@@ -7,12 +7,15 @@ from rest_framework.test import APIRequestFactory
 from django.core.exceptions import ValidationError
 
 from . import model_factories as mfactories
-from ..models import Document, timezone
-from ..views import DocumentViewSet
+from ..models import Document
+from ..views import DocumentViewSet, document_download_view
 import re
 import mock
 from django.core.files import File
 from django.test.utils import override_settings
+
+from io import BytesIO
+from PIL import Image
 
 
 class DocumentListViewsTest(TestCase):
@@ -205,8 +208,8 @@ class DocumentListViewsTest(TestCase):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.jpg'
 
-        mfactories.Document(file_name='Document1.png',
-                            file=file_mock)
+        doc1 = mfactories.Document(file_name='Document1.png',
+                                   file=file_mock)
 
         mfactories.Document(file_name='Document2.png')
 
@@ -218,11 +221,10 @@ class DocumentListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
-        now = timezone.now()
-        expected_file = "https://example.example.com/uploads/" \
-                        "%s-%s/%s/\S{36}.jpg" % (now.year, now.month, now.day)
+        url = "/file/{}".format(doc1.pk)
+        expected_file = request.build_absolute_uri(url)
 
-        self.assertRegexpMatches(response.data[0]['file'], expected_file)
+        self.assertEquals(response.data[0]['file'], expected_file)
         self.assertIsNone(response.data[1]['file'])
 
 
@@ -411,4 +413,59 @@ class DocumentUpdateViewsTest(TestCase):
         request = self.factory.post('', {})
         view = DocumentViewSet.as_view({'post': 'update'})
         response = view(request)
+        self.assertEqual(response.status_code, 403)
+
+
+class DocumentProxyViewTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = mfactories.User()
+
+    @mock.patch('documents.views._lookup_file_location')
+    def test_retrieve_document(self, mock_lookup):
+        # generate image file for testing
+        file = BytesIO()
+        image = Image.new('RGBA', size=(10, 10), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+
+        # mock bucket lookup return value with file read
+        mock_lookup.return_value = mock.Mock(
+            file_name="test.png", size=1, read=file.read)
+
+        document = mfactories.Document(file_name="test.png")
+        request = self.factory.get('')
+        request.user = self.user
+        response = document_download_view(request, file_id=document.pk)
+        mock_lookup.assert_called_once()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get("Content-Length"), '1')
+        self.assertEqual(response.get("Content-Disposition"),
+                         "attachment; filename=test.png")
+
+        self.assertTrue(response.streaming)
+        streamed_bytes = BytesIO(list(response.streaming_content)[0])
+        streamed_image = Image.open(streamed_bytes)
+        self.assertEqual(streamed_image.size, (10, 10))
+        self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
+
+    @mock.patch('documents.views._lookup_file_location')
+    def test_retrieve_document_not_found(self, mock_lookup):
+        mock_lookup.return_value = None
+
+        document = mfactories.Document(file_name="test.jpg")
+        request = self.factory.get('')
+        request.user = self.user
+        response = document_download_view(request, file_id=document.pk)
+        mock_lookup.assert_called_once()
+        self.assertEqual(response.status_code, 404)
+        self.assertIsNone(response.get("Content-Length"))
+        self.assertIsNone(response.get("Content-Disposition"))
+
+        self.assertFalse(response.streaming)
+
+    def test_retrieve_document_anonymoususer(self):
+        document = mfactories.Document()
+        response = self.client.get('/file/{}'.format(document.pk))
         self.assertEqual(response.status_code, 403)
