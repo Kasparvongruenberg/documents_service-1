@@ -12,12 +12,16 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 
-try:
-    from django_boto.s3.storage import S3Storage
-    file_storage = S3Storage()
-except AttributeError:
-    from django.core.files.storage import FileSystemStorage
-    file_storage = FileSystemStorage('/media/uploads/')
+
+def get_file_storage():
+    try:
+        from django_boto.s3.storage import S3Storage
+        file_storage = S3Storage()
+    except AttributeError:
+        from django.core.files.storage import FileSystemStorage
+        file_storage = FileSystemStorage('/media/uploads/')
+    return file_storage
+
 
 FILE_TYPE_CHOICES = (
     ('jpg', 'JPG Image'),
@@ -57,7 +61,7 @@ class Document(models.Model):
     file = models.FileField(upload_to=partial(make_filepath, 'file'),
                             null=True,
                             blank=True,
-                            storage=file_storage)
+                            storage=get_file_storage())
 
     create_date = models.DateTimeField(null=True, blank=True)
     upload_date = models.DateTimeField(null=True, blank=True,

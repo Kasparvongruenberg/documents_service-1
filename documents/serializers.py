@@ -3,10 +3,30 @@ from .models import Document
 import base64
 import uuid
 from django.core.files.base import ContentFile
-from .models import FILE_TYPE_CHOICES
+from .models import FILE_TYPE_CHOICES, get_file_storage
 
 
 class Base64FileField(serializers.FileField):
+    def to_representation(self, value):
+        if not value:
+            return None
+
+        try:
+            file_storage = get_file_storage()
+
+            prefix = 'https'
+            if file_storage.force_http:
+                prefix = 'http'
+
+            return '{}://{}.{}/{}'.format(prefix, file_storage.bucket_name,
+                                          file_storage.host, value.name)
+        except AttributeError:
+            pass
+        except ValueError:
+            pass
+
+        return None
+
     def to_internal_value(self, data):
         if isinstance(data, str) and (data.startswith('data:')):
             format, filestr = data.split(';base64,')
