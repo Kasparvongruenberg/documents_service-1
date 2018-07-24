@@ -1,9 +1,11 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
 
-from .models import Document
+from .models import Document, get_file_storage
 from .serializers import DocumentSerializer
 import django_filters
+from django.http import FileResponse
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -48,3 +50,28 @@ class DocumentViewSet(viewsets.ModelViewSet):
                        filters.OrderingFilter)
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+
+
+def _lookup_file_location(file):
+    loc = get_file_storage().bucket.lookup(file)
+    print(type(loc))
+    return loc
+
+
+def document_download_view(request, file_id):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    document = Document.objects.get(pk=file_id)
+    data = _lookup_file_location(document.file)
+
+    if not data:
+        return HttpResponseNotFound()
+
+    response = FileResponse(data)
+    response['Content-Disposition'] = \
+        'attachment; filename=%s' % document.file_name
+
+    response['Content-Length'] = data.size
+
+    return response

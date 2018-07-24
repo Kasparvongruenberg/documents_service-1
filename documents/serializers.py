@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from .models import Document
+from .models import Document, FILE_TYPE_CHOICES
 import base64
 import uuid
 from django.core.files.base import ContentFile
-from .models import FILE_TYPE_CHOICES, get_file_storage
 
 
 class Base64FileField(serializers.FileField):
@@ -11,21 +10,14 @@ class Base64FileField(serializers.FileField):
         if not value:
             return None
 
-        try:
-            file_storage = get_file_storage()
+        doc = Document.objects.get(file=value)
+        url = '/file/{}'.format(doc.id)
 
-            prefix = 'https'
-            if file_storage.force_http:
-                prefix = 'http'
+        request = self.context.get('request', None)
+        if request is not None:
+            return request.build_absolute_uri(url)
 
-            return '{}://{}.{}/{}'.format(prefix, file_storage.bucket_name,
-                                          file_storage.host, value.name)
-        except AttributeError:
-            pass
-        except ValueError:
-            pass
-
-        return None
+        return url
 
     def to_internal_value(self, data):
         if isinstance(data, str) and (data.startswith('data:')):

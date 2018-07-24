@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from documents.views import document_download_view
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    url(r'^file/(?P<file_id>\w+)', document_download_view),
     path('health_check/', include('health_check.urls')),
 ]
