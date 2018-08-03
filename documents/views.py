@@ -1,11 +1,12 @@
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from .models import Document, get_file_storage
 from .serializers import DocumentSerializer
 import django_filters
 from django.http import FileResponse
-from django.http import HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseNotFound
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -54,14 +55,11 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 def _lookup_file_location(file):
     loc = get_file_storage().bucket.lookup(file)
-    print(type(loc))
     return loc
 
 
+@api_view(['GET'])
 def document_download_view(request, file_id):
-    if not request.user.is_authenticated:
-        return HttpResponseForbidden()
-
     document = Document.objects.get(pk=file_id)
     data = _lookup_file_location(document.file)
 
