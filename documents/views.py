@@ -17,7 +17,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return super(DocumentViewSet, self).update(request, *args, **kwargs)
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -56,6 +56,23 @@ class DocumentViewSet(viewsets.ModelViewSet):
 def _lookup_file_location(file):
     loc = get_file_storage().bucket.lookup(file)
     return loc
+
+
+@api_view(['GET'])
+def document_thumbnail_view(request, file_id):
+    document = Document.objects.get(pk=file_id)
+    data = _lookup_file_location(document.thumbnail)
+
+    if not data:
+        return HttpResponseNotFound()
+
+    response = FileResponse(data)
+    response['Content-Disposition'] = \
+        'attachment; filename=thumbnail_%s' % document.file_name
+
+    response['Content-Length'] = data.size
+
+    return response
 
 
 @api_view(['GET'])

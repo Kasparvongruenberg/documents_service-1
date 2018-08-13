@@ -30,6 +30,10 @@ To run flake8:
 docker-compose -f docker-compose-dev.yml run --entrypoint 'flake8 --exclude=settings,migrations' documents_service
 ```
 
+To run bash
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm documents_service bash
+```
 
 ## Deploy to server
 

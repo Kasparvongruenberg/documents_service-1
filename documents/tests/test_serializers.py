@@ -18,9 +18,10 @@ class DocumentSerializerTest(TestCase):
 
     def test_contains_expected_fields(self):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.jpg'
+        # Mock with pdf since image files will trigger thumbnail generation
+        file_mock.name = 'test1.pdf'
 
-        document = mfactories.Document(file_name='Document1.jpg',
+        document = mfactories.Document(file_name='Document1.pdf',
                                        file=file_mock)
 
         serializer = DocumentSerializer(instance=document)
@@ -40,7 +41,8 @@ class DocumentSerializerTest(TestCase):
             'file_description',
             'id',
             'file',
-            'file_name'
+            'file_name',
+            'thumbnail'
         ]
 
         self.assertEqual(set(data.keys()), set(keys))
@@ -51,9 +53,10 @@ class DocumentSerializerTest(TestCase):
     @override_settings(BOTO_S3_HOST='example.com')
     def test_mock_s3(self):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.jpg'
+        # Mock with pdf since image files will trigger thumbnail generation
+        file_mock.name = 'test1.pdf'
 
-        self.document = mfactories.Document(file_name='Document1.jpg',
+        self.document = mfactories.Document(file_name='Document1.pdf',
                                             file=file_mock)
 
         expected_file = "/file/{}".format(self.document.pk)

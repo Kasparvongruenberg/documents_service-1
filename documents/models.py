@@ -1,11 +1,15 @@
 from __future__ import unicode_literals
 import uuid
+from io import BytesIO
 
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
+from django.db import models
 
 from functools import partial
+from PIL import Image
+
 
 try:
     from django.utils import timezone
@@ -37,12 +41,21 @@ FILE_TYPE_CHOICES = (
     ('ppt', 'ppt Document'),
     ('pptx', 'pptx Document'),
 )
+IMAGE_FILE_TYPES = ['jpg', 'jpeg', 'png', '.gif']
+THUMBNAIL_DIMENSIONS = (200, 200)
 
 
 def make_filepath(field_name, instance, filename):
     now = timezone.now()
     new_filename = "%s.%s" % (uuid.uuid4(), filename.split('.')[-1])
     filepath = "uploads/%s-%s/%s/" % (now.year, now.month, now.day)
+    return filepath+new_filename
+
+
+def make_filepath_thumbnail(field_name, instance, filename):
+    now = timezone.now()
+    new_filename = "%s.%s" % (uuid.uuid4(), filename.split('.')[-1])
+    filepath = "uploads/%s-%s/%s/thumbnails/" % (now.year, now.month, now.day)
     return filepath+new_filename
 
 
@@ -59,6 +72,12 @@ class Document(models.Model):
         help_text='Allowed File Types: {}'.format(
             ", ".join([ft[0] for ft in FILE_TYPE_CHOICES])))
     file = models.FileField(upload_to=partial(make_filepath, 'file'),
+                            null=True,
+                            blank=True,
+                            storage=get_file_storage())
+
+    thumbnail = models.FileField(
+                            upload_to=partial(make_filepath_thumbnail, 'file'),
                             null=True,
                             blank=True,
                             storage=get_file_storage())
@@ -92,9 +111,62 @@ class Document(models.Model):
 
     def save(self, *args, **kwargs):
         self.file_type = self.file_name.lower().split('.')[-1]
-
         self.full_clean()
+
+        if self.file_type in IMAGE_FILE_TYPES and self.file:
+            self.make_thumbnail()
+
         super(Document, self).save()
+
+    def make_thumbnail(self):
+        if self.file_type in ['jpg', 'jpeg']:
+            ftype = 'JPEG'
+        elif self.file_type == 'gif':
+            ftype = 'GIF'
+        elif self.file_type == 'png':
+            ftype = 'PNG'
+        else:
+            return False
+
+        # load image
+        image = Image.open(self.file)
+
+        # scale and crop image to maintain ratio
+        size = THUMBNAIL_DIMENSIONS
+        image_ratio = image.size[0] / image.size[1]
+
+        ratio = size[0] / size[1]
+
+        if ratio > image_ratio:
+            image = image.resize(
+                (size[0], int(size[0] * image.size[1] / image.size[0])),
+                Image.ANTIALIAS)
+
+            box = (0, (image.size[1] - size[1]) / 2,
+                   image.size[0], (image.size[1] + size[1]) / 2)
+
+            image = image.crop(box)
+        elif ratio < image_ratio:
+            image = image.resize(
+                (int(size[1] * image.size[0] / image.size[1]), size[1]),
+                Image.ANTIALIAS)
+
+            box = (
+                int((image.size[0] - size[0]) / 2), 0,
+                int((image.size[0] + size[0]) / 2), image.size[1])
+
+            image = image.crop(box)
+        else:
+            image = image.resize((size[0], size[1]), Image.ANTIALIAS)
+
+        # save temporary image
+        temp_thumb = BytesIO()
+
+        image.save(temp_thumb, ftype)
+        temp_thumb.seek(0)
+
+        self.thumbnail = ContentFile(temp_thumb.read(),
+                                     name=self.file.name)
 
     def __unicode__(self):
         return u'{} {}'.format(self.file_type, self.file_name)
