@@ -6,12 +6,14 @@ from django.core.files.base import ContentFile
 
 
 class Base64FileField(serializers.FileField):
+    base_url = '/file/{}'
+
     def to_representation(self, value):
         if not value:
             return None
 
         doc = Document.objects.get(file=value)
-        url = '/file/{}'.format(doc.id)
+        url = self.base_url.format(doc.id)
 
         request = self.context.get('request', None)
         if request is not None:
@@ -33,11 +35,32 @@ class Base64FileField(serializers.FileField):
         return super(Base64FileField, self).to_internal_value(data)
 
 
+class MaskedThumbnailField(serializers.ReadOnlyField):
+    base_url = '/thumbnail/{}'
+
+    def to_representation(self, value):
+        if not value:
+            return None
+
+        doc = Document.objects.get(thumbnail=value)
+        url = self.base_url.format(doc.id)
+
+        request = self.context.get('request', None)
+        if request is not None:
+            return request.build_absolute_uri(url)
+
+        return url
+
+    def to_internal_value(self, data):
+        return None
+
+
 class DocumentSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
     uuid = serializers.ReadOnlyField()
     upload_date = serializers.ReadOnlyField()
     file = Base64FileField()
+    thumbnail = MaskedThumbnailField()
 
     class Meta:
         model = Document

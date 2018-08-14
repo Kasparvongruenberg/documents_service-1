@@ -7,6 +7,9 @@ from django.test import TestCase
 import pytz
 
 from ..models import Document
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 class DocumentTest(TestCase):
@@ -263,3 +266,31 @@ class DocumentTest(TestCase):
         document_db = Document.objects.get(pk=document.pk)
         self.assertEqual(document_db.file_name, file_name)
         self.assertEqual(document_db.contact_uuid, contact_uuid)
+
+    def test_document_save_generates_thumbnail(self):
+        file_name = "Test.jpg"
+        contact_uuid = str(uuid.uuid4())
+
+        image = Image.new('RGB', (400, 500), color='blue')
+        temp_thumb = BytesIO()
+        image.save(temp_thumb, "JPEG")
+        temp_thumb.seek(0)
+
+        file = ContentFile(temp_thumb.read(), name="Testfile.jpg")
+
+        document = Document.objects.create(
+            file_name=file_name,
+            file=file,
+            file_type='jpg',
+            workflowlevel1_uuids=[str(uuid.uuid4())],
+            contact_uuid=contact_uuid
+        )
+
+        document.save()
+
+        document_db = Document.objects.get(pk=document.pk)
+
+        self.assertEqual(document_db.file_name, file_name)
+        self.assertEqual(document_db.contact_uuid, contact_uuid)
+        thumbnail = Image.open(document_db.thumbnail)
+        self.assertEqual(thumbnail.size, (200, 200))

@@ -8,7 +8,8 @@ from django.core.exceptions import ValidationError
 
 from . import model_factories as mfactories
 from ..models import Document
-from ..views import DocumentViewSet, document_download_view
+from ..views import DocumentViewSet, document_download_view, \
+    document_thumbnail_view
 import re
 import mock
 from django.core.files import File
@@ -206,12 +207,13 @@ class DocumentListViewsTest(TestCase):
     @override_settings(BOTO_S3_HOST='example.com')
     def test_list_documents_url(self):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.jpg'
+        # Mock with pdf since image files will trigger thumbnail generation
+        file_mock.name = 'test1.pdf'
 
-        doc1 = mfactories.Document(file_name='Document1.png',
+        doc1 = mfactories.Document(file_name='Document1.pdf',
                                    file=file_mock)
 
-        mfactories.Document(file_name='Document2.png')
+        mfactories.Document(file_name='Document2.pdf')
 
         request = self.factory.get('')
         request.user = self.user
@@ -257,7 +259,7 @@ class DocumentCreateViewsTest(TestCase):
         contact_uuid = str(uuid.uuid4())
 
         data = {
-            'file_name': u'Testfile.pdf',
+            'file_name': u'Testfile.png',
             'file': 'data:image/png;base64,'
                     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR'
                     '42mP8z/C/HgAGgwJ/lK3Q6wAAAABJRU5ErkJggg==',
@@ -273,7 +275,7 @@ class DocumentCreateViewsTest(TestCase):
 
         document = Document.objects.get(id=response.data['id'])
         self.assertEqual(document.file_name, data['file_name'])
-        self.assertEqual(document.file_type, 'pdf')
+        self.assertEqual(document.file_type, 'png')
         self.assertEqual(document.contact_uuid, contact_uuid)
 
     def test_create_document(self):
@@ -312,6 +314,7 @@ class DocumentCreateViewsTest(TestCase):
         self.assertEqual(document.workflowlevel2_uuids, workflowlevel2_uuids)
         self.assertEqual(document.organization_uuid, organization_uuid)
         self.assertEqual(document.contact_uuid, contact_uuid)
+        self.assertIsNotNone(data['thumbnail'])
 
     def test_create_document_anonymoususer(self):
         request = self.factory.post('', {})
@@ -451,6 +454,35 @@ class DocumentProxyViewTest(TestCase):
         self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
 
     @mock.patch('documents.views._lookup_file_location')
+    def test_retrieve_thumbnail(self, mock_lookup):
+        # generate image file for testing
+        file = BytesIO()
+        image = Image.new('RGBA', size=(10, 10), color=(155, 0, 0))
+        image.save(file, 'png')
+        file.name = 'test.png'
+        file.seek(0)
+
+        # mock bucket lookup return value with file read
+        mock_lookup.return_value = mock.Mock(
+            file_name="file.png", size=1, read=file.read)
+
+        document = mfactories.Document(file_name="file.png")
+        request = self.factory.get('')
+        request.user = self.user
+        response = document_thumbnail_view(request, file_id=document.pk)
+        mock_lookup.assert_called_once()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get("Content-Length"), '1')
+        self.assertEqual(response.get("Content-Disposition"),
+                         "attachment; filename=thumbnail_file.png")
+
+        self.assertTrue(response.streaming)
+        streamed_bytes = BytesIO(list(response.streaming_content)[0])
+        streamed_image = Image.open(streamed_bytes)
+        self.assertEqual(streamed_image.size, (10, 10))
+        self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
+
+    @mock.patch('documents.views._lookup_file_location')
     def test_retrieve_document_not_found(self, mock_lookup):
         mock_lookup.return_value = None
 
@@ -458,6 +490,21 @@ class DocumentProxyViewTest(TestCase):
         request = self.factory.get('')
         request.user = self.user
         response = document_download_view(request, file_id=document.pk)
+        mock_lookup.assert_called_once()
+        self.assertEqual(response.status_code, 404)
+        self.assertIsNone(response.get("Content-Length"))
+        self.assertIsNone(response.get("Content-Disposition"))
+
+        self.assertFalse(response.streaming)
+
+    @mock.patch('documents.views._lookup_file_location')
+    def test_retrieve_thumbnail_not_found(self, mock_lookup):
+        mock_lookup.return_value = None
+
+        document = mfactories.Document(file_name="test.jpg")
+        request = self.factory.get('')
+        request.user = self.user
+        response = document_thumbnail_view(request, file_id=document.pk)
         mock_lookup.assert_called_once()
         self.assertEqual(response.status_code, 404)
         self.assertIsNone(response.get("Content-Length"))
