@@ -11,8 +11,8 @@ else
     echo $(date -u) " - Running the server in branch '$branch'"
 
     if [ "$branch" == "dev" ]; then
-        gunicorn -b 0.0.0.0:8081 documents-service.wsgi --reload
+        gunicorn -b 0.0.0.0:8080 documents-service.wsgi --reload
     else
-        gunicorn -b 0.0.0.0:8081 documents-service.wsgi
+        gunicorn -b 0.0.0.0:8080 documents-service.wsgi
     fi
 fi
