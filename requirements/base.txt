@@ -1,6 +1,6 @@
 Django==2.0.5
 git+https://github.com/Humanitec/django-oauth-toolkit-jwt@v0.3.3#egg=django-oauth-toolkit-jwt
-djangorestframework==3.7.3
+djangorestframework==3.8.2
 coreapi==2.3.3
 psycopg2-binary>=2.7,<2.8
 boto3==1.7.19
@@ -9,3 +9,8 @@ django-filter==1.0.4
 pytz==2018.3
 django-health-check==3.5.1
 pillow==5.2.0
+celery==4.2.1
+voluptuous==0.11.1
+futures==3.1.1
+django-cors-headers==2.4.0
+drf-yasg==1.10.2

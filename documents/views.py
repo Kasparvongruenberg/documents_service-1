@@ -7,6 +7,7 @@ from .serializers import DocumentSerializer
 import django_filters
 from django.http import FileResponse
 from django.http import HttpResponseNotFound
+from django.conf import settings
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -54,7 +55,11 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 
 def _lookup_file_location(file):
-    loc = get_file_storage().bucket.lookup(file)
+    if settings.FILE_STORAGE is "S3":
+        loc = get_file_storage().bucket.lookup(file)
+    else:
+        loc = settings.MEDIA_URL + file.name
+        loc = open(loc, 'rb')
     return loc
 
 

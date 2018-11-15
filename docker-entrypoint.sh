@@ -3,6 +3,9 @@
 echo $(date -u) " - Migrating"
 python manage.py migrate
 
+echo $(date -u) "- Collect Static"
+python manage.py collectstatic --no-input
+
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
     echo $(date -u) " - There was a problem migrating. Setting up the maintenance page"

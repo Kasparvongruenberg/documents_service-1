@@ -29,9 +29,13 @@ DEBUG = False if os.getenv('DEBUG') == 'False' else True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATIC_ROOT = '/static/'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = './static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 INSTALLED_APPS_DJANGO = [
     'django.contrib.admin',
@@ -47,6 +51,7 @@ INSTALLED_APPS_THIRD_PARTIES = [
     'rest_framework.authtoken',
     'django_filters',
     'django_boto',
+    'drf_yasg',
 
     # health check
     'health_check',  # required
@@ -176,6 +181,10 @@ AWS_SECRET_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_SECRET')
 BOTO_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 BOTO_BUCKET_LOCATION = 'eu-central-1'
 AWS_S3_SECURE_URLS = True
+
+# file storage options ['local','S3','gdrive','office365']
+# TODO: add integration for gdrive and office365
+FILE_STORAGE = "local"
 
 # JWT Configuration
 

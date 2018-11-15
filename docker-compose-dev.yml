@@ -4,11 +4,6 @@ services:
 
   postgres_documents_service:
     container_name: postgres_documents_service
-    healthcheck:
-      test: "pg_isready -h localhost -p 5432 -q -U postgres"
-      interval: 3s
-      timeout: 5s
-      retries: 5
     image: postgres:9.6
     environment:
       POSTGRES_DB: documents_service
