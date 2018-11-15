@@ -17,11 +17,33 @@ from django.contrib import admin
 from django.urls import path, include
 from documents.views import document_download_view, document_thumbnail_view
 from django.conf.urls import url
+from rest_framework import permissions
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+# openapi implementation
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Documents Service API",
+        default_version='latest',
+        description="Test description",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    url(r'^api/docs/swagger(?P<format>\.json|\.yaml)$',
+        schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^api/docs/$', schema_view.with_ui('swagger', cache_timeout=0),
+        name='schema-swagger-ui'),
     path('api/', include('api.urls')),
     url(r'^file/(?P<file_id>\w+)', document_download_view),
     url(r'^thumbnail/(?P<file_id>\w+)', document_thumbnail_view),
     path('health_check/', include('health_check.urls')),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
