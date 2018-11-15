@@ -91,7 +91,8 @@ class Document(models.Model):
     user_uuid = models.CharField(max_length=36, blank=True, null=True,
                                  verbose_name='User UUID')
 
-    contact_uuid = models.CharField(max_length=36, verbose_name='Contact UUID')
+    contact_uuid = models.CharField(max_length=36, blank=True,
+                                    null=True, verbose_name='Contact UUID')
 
     workflowlevel1_uuids = ArrayField(models.CharField(max_length=36),
                                       blank=True, null=True,
