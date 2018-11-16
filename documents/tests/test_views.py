@@ -8,15 +8,11 @@ from django.core.exceptions import ValidationError
 
 from . import model_factories as mfactories
 from ..models import Document
-from ..views import DocumentViewSet, document_download_view, \
-    document_thumbnail_view
+from ..views import DocumentViewSet
 import re
 import mock
 from django.core.files import File
 from django.test.utils import override_settings
-
-from io import BytesIO
-from PIL import Image
 
 
 class DocumentListViewsTest(TestCase):
