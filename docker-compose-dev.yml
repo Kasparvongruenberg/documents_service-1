@@ -18,13 +18,14 @@ services:
   documents_service:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: documents_service
     image: documents_service
     volumes:
       - .:/code
+      - static-content:/static
     ports:
-      - "8081:8081"
+      - "8080:8080"
     depends_on:
       - postgres_documents_service
     environment:
@@ -35,8 +36,24 @@ services:
       DATABASE_HOST: "postgres_documents_service"
       DATABASE_PORT: "5432"
       DEBUG: "True"
+      CORS_ORIGIN_WHITELIST: "*"
       JWT_PUBLIC_KEY_RSA_ACTIVITYAPI: |-
         -----BEGIN PUBLIC KEY-----
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB
         qhqvJu1hKPYn9HYd75c0gIDYHJ9lb7QwQvg44aO27104rDK0xSstzL0CAwEAAQ==
         -----END PUBLIC KEY-----
+
+  nginx_documents:
+    image: nginx:latest
+    container_name: nginx_documents
+    ports:
+    - "8001:8000"
+    volumes:
+    - .:/code
+    - ./docker/etc/nginx:/etc/nginx/conf.d
+    - static-content:/static
+    depends_on:
+    - postgres_documents_service
+
+volumes:
+  static-content:
