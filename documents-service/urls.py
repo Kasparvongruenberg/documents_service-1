@@ -19,6 +19,9 @@ from documents.views import document_download_view, document_thumbnail_view
 from django.conf.urls import url
 from rest_framework import permissions
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 # openapi implementation
 from drf_yasg.views import get_schema_view
@@ -41,9 +44,10 @@ urlpatterns = [
     url(r'^api/docs/$', schema_view.with_ui('swagger', cache_timeout=0),
         name='schema-swagger-ui'),
     path('api/', include('api.urls')),
+
     url(r'^file/(?P<file_id>\w+)', document_download_view),
     url(r'^thumbnail/(?P<file_id>\w+)', document_thumbnail_view),
     path('health_check/', include('health_check.urls')),
 ]
 
-urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
