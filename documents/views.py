@@ -53,8 +53,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
 
 
-
-
 @api_view(['GET'])
 def document_thumbnail_view(request, file_id):
     document = Document.objects.get(pk=file_id)
