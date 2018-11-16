@@ -424,7 +424,6 @@ class DocumentProxyViewTest(TestCase):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
 
-
     def test_retrieve_document(self, mock_lookup):
         # generate image file for testing
         file = BytesIO()
