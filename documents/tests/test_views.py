@@ -424,7 +424,7 @@ class DocumentProxyViewTest(TestCase):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
 
-    def test_retrieve_document(self, mock_lookup):
+    def test_retrieve_document(self):
         # generate image file for testing
         file = BytesIO()
         image = Image.new('RGBA', size=(10, 10), color=(155, 0, 0))
@@ -432,15 +432,10 @@ class DocumentProxyViewTest(TestCase):
         file.name = 'test.png'
         file.seek(0)
 
-        # mock bucket lookup return value with file read
-        mock_lookup.return_value = mock.Mock(
-            file_name="test.png", size=1, read=file.read)
-
         document = mfactories.Document(file_name="test.png")
         request = self.factory.get('')
         request.user = self.user
         response = document_download_view(request, file_id=document.pk)
-        mock_lookup.assert_called_once()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("Content-Length"), '1')
         self.assertEqual(response.get("Content-Disposition"),
@@ -452,7 +447,7 @@ class DocumentProxyViewTest(TestCase):
         self.assertEqual(streamed_image.size, (10, 10))
         self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
 
-    def test_retrieve_thumbnail(self, mock_lookup):
+    def test_retrieve_thumbnail(self):
         # generate image file for testing
         file = BytesIO()
         image = Image.new('RGBA', size=(10, 10), color=(155, 0, 0))
@@ -460,15 +455,10 @@ class DocumentProxyViewTest(TestCase):
         file.name = 'test.png'
         file.seek(0)
 
-        # mock bucket lookup return value with file read
-        mock_lookup.return_value = mock.Mock(
-            file_name="file.png", size=1, read=file.read)
-
         document = mfactories.Document(file_name="file.png")
         request = self.factory.get('')
         request.user = self.user
         response = document_thumbnail_view(request, file_id=document.pk)
-        mock_lookup.assert_called_once()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("Content-Length"), '1')
         self.assertEqual(response.get("Content-Disposition"),
@@ -480,28 +470,24 @@ class DocumentProxyViewTest(TestCase):
         self.assertEqual(streamed_image.size, (10, 10))
         self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
 
-    def test_retrieve_document_not_found(self, mock_lookup):
-        mock_lookup.return_value = None
+    def test_retrieve_document_not_found(self):
 
         document = mfactories.Document(file_name="test.jpg")
         request = self.factory.get('')
         request.user = self.user
         response = document_download_view(request, file_id=document.pk)
-        mock_lookup.assert_called_once()
         self.assertEqual(response.status_code, 404)
         self.assertIsNone(response.get("Content-Length"))
         self.assertIsNone(response.get("Content-Disposition"))
 
         self.assertFalse(response.streaming)
 
-    def test_retrieve_thumbnail_not_found(self, mock_lookup):
-        mock_lookup.return_value = None
+    def test_retrieve_thumbnail_not_found(self):
 
         document = mfactories.Document(file_name="test.jpg")
         request = self.factory.get('')
         request.user = self.user
         response = document_thumbnail_view(request, file_id=document.pk)
-        mock_lookup.assert_called_once()
         self.assertEqual(response.status_code, 404)
         self.assertIsNone(response.get("Content-Length"))
         self.assertIsNone(response.get("Content-Disposition"))
