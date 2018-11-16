@@ -424,7 +424,7 @@ class DocumentProxyViewTest(TestCase):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
 
-    @mock.patch('documents.views._lookup_file_location')
+
     def test_retrieve_document(self, mock_lookup):
         # generate image file for testing
         file = BytesIO()
@@ -453,7 +453,6 @@ class DocumentProxyViewTest(TestCase):
         self.assertEqual(streamed_image.size, (10, 10))
         self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
 
-    @mock.patch('documents.views._lookup_file_location')
     def test_retrieve_thumbnail(self, mock_lookup):
         # generate image file for testing
         file = BytesIO()
@@ -482,7 +481,6 @@ class DocumentProxyViewTest(TestCase):
         self.assertEqual(streamed_image.size, (10, 10))
         self.assertEqual(streamed_image.getpixel((5, 5)), (155, 0, 0, 255))
 
-    @mock.patch('documents.views._lookup_file_location')
     def test_retrieve_document_not_found(self, mock_lookup):
         mock_lookup.return_value = None
 
@@ -497,7 +495,6 @@ class DocumentProxyViewTest(TestCase):
 
         self.assertFalse(response.streaming)
 
-    @mock.patch('documents.views._lookup_file_location')
     def test_retrieve_thumbnail_not_found(self, mock_lookup):
         mock_lookup.return_value = None
 
