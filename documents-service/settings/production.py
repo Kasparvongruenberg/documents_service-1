@@ -62,3 +62,6 @@ if os.getenv('USE_HTTPS') == 'True':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_SECRET')
+BOTO_S3_BUCKET = os.getenv('AWS_S3_BUCKET')

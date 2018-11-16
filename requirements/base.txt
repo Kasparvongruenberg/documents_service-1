@@ -3,8 +3,9 @@ git+https://github.com/Humanitec/django-oauth-toolkit-jwt@v0.3.3#egg=django-oaut
 djangorestframework==3.8.2
 coreapi==2.3.3
 psycopg2-binary>=2.7,<2.8
+django-boto
 boto3==1.7.19
-django-boto==0.3.12
+django-storages
 django-filter==1.0.4
 pytz==2018.3
 django-health-check==3.5.1

@@ -38,7 +38,7 @@ INSTALLED_APPS_THIRD_PARTIES = [
     'django_filters',
     'django_boto',
     'drf_yasg',
-
+    'storages',
     # health check
     'health_check',  # required
     'health_check.db',  # stock Django health checkers
@@ -162,10 +162,11 @@ MEDIA_URL = '/media/'
 # END MEDIA CONFIGURATION
 
 # AWS Configuration
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_SECRET')
-BOTO_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
-BOTO_BUCKET_LOCATION = 'eu-central-1'
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_SECURE_URLS = True
 
 # file storage options ['local','S3','gdrive','office365']

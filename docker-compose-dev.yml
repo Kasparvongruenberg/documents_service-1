@@ -37,9 +37,9 @@ services:
       DATABASE_PORT: "5432"
       DEBUG: "True"
       CORS_ORIGIN_WHITELIST: "*"
-      AWS_ACCESS_KEY_ID:
-      AWS_SECRET_ACCESS_KEY:
-      BOTO_S3_BUCKET:
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      AWS_STORAGE_BUCKET_NAME: 'walhall-documents-dev'
       JWT_PUBLIC_KEY_RSA_ACTIVITYAPI: |-
         -----BEGIN PUBLIC KEY-----
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB

@@ -2,12 +2,11 @@ from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Document, get_file_storage
+from .models import Document
 from .serializers import DocumentSerializer
 import django_filters
 from django.http import FileResponse
 from django.http import HttpResponseNotFound
-from django.conf import settings
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -54,19 +53,12 @@ class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
 
 
-def _lookup_file_location(file):
-    if settings.FILE_STORAGE is "S3":
-        loc = get_file_storage().bucket.lookup(file)
-    else:
-        loc = settings.MEDIA_URL + file.name
-        loc = open(loc, 'rb')
-    return loc
 
 
 @api_view(['GET'])
 def document_thumbnail_view(request, file_id):
     document = Document.objects.get(pk=file_id)
-    data = _lookup_file_location(document.thumbnail)
+    data = document.thumbnail
 
     if not data:
         return HttpResponseNotFound()
@@ -83,7 +75,7 @@ def document_thumbnail_view(request, file_id):
 @api_view(['GET'])
 def document_download_view(request, file_id):
     document = Document.objects.get(pk=file_id)
-    data = _lookup_file_location(document.file)
+    data = document.file
 
     if not data:
         return HttpResponseNotFound()

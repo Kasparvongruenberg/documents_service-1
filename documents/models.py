@@ -10,21 +10,10 @@ from django.db import models
 from functools import partial
 from PIL import Image
 
-
 try:
     from django.utils import timezone
 except ImportError:
     from datetime import datetime as timezone
-
-
-def get_file_storage():
-    try:
-        from django_boto.s3.storage import S3Storage
-        file_storage = S3Storage()
-    except AttributeError:
-        from django.core.files.storage import FileSystemStorage
-        file_storage = FileSystemStorage('/media/uploads/')
-    return file_storage
 
 
 FILE_TYPE_CHOICES = (
@@ -41,6 +30,7 @@ FILE_TYPE_CHOICES = (
     ('ppt', 'ppt Document'),
     ('pptx', 'pptx Document'),
 )
+
 IMAGE_FILE_TYPES = ['jpg', 'jpeg', 'png', '.gif']
 THUMBNAIL_DIMENSIONS = (200, 200)
 
@@ -74,13 +64,13 @@ class Document(models.Model):
     file = models.FileField(upload_to=partial(make_filepath, 'file'),
                             null=True,
                             blank=True,
-                            storage=get_file_storage())
+                            )
 
     thumbnail = models.FileField(
                             upload_to=partial(make_filepath_thumbnail, 'file'),
                             null=True,
                             blank=True,
-                            storage=get_file_storage())
+                            )
 
     create_date = models.DateTimeField(null=True, blank=True)
     upload_date = models.DateTimeField(null=True, blank=True,
