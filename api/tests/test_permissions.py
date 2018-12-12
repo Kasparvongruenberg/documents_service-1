@@ -8,12 +8,12 @@ class RestFrameworkPermissionsTest(TestCase):
         client = RequestsClient()
         client.headers.update({'x-test': 'true'})
 
-        response = client.get('http://testserver/api/documents/')
+        response = client.get('http://testserver/documents/')
         assert response.status_code == 403
 
     def test_options_request_works_without_auth(self):
         client = RequestsClient()
         client.headers.update({'x-test': 'true'})
 
-        response = client.options('http://testserver/api/documents/')
+        response = client.options('http://testserver/documents/')
         assert response.status_code == 200
