@@ -28,7 +28,7 @@ pipeline:
     image: plugins/docker
     insecure: true
     registry: registry.tola.io
-    repo: registry.tola.io/toladata/documents_service
+    repo: registry.tola.io/humanitec/documents_service
     file: Dockerfile
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
@@ -40,7 +40,7 @@ pipeline:
     image: plugins/docker
     insecure: true
     registry: registry.tola.io
-    repo: registry.tola.io/toladata/documents_service_static
+    repo: registry.tola.io/humanitec/documents_service_static
     dockerfile: Dockerfile.nginx
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
