@@ -36,18 +36,6 @@ pipeline:
       event: [tag]
       status: [success]
 
-  build-docker-static-image-tag:
-    image: plugins/docker
-    insecure: true
-    registry: registry.tola.io
-    repo: registry.tola.io/humanitec/documents_service_static
-    dockerfile: Dockerfile.nginx
-    auto_tag: true
-    secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
-    when:
-      event: [tag]
-      status: [success]
-
   notify:
     image: plugins/slack
     channel: drone-ci
