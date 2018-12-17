@@ -46,7 +46,7 @@ INSTALLED_APPS_THIRD_PARTIES = [
 
 INSTALLED_APPS_LOCAL = [
     'api',
-    'documents',
+    'document',
 ]
 
 INSTALLED_APPS = INSTALLED_APPS_DJANGO + INSTALLED_APPS_THIRD_PARTIES + \
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'documents-service.urls'
+ROOT_URLCONF = 'document_service.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'documents-service.wsgi.application'
+WSGI_APPLICATION = 'document_service.wsgi.application'
 
 
 # Database
@@ -140,7 +140,7 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
-        'documents-service.pagination.DefaultCursorPagination',
+        'document_service.pagination.DefaultCursorPagination',
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -177,3 +177,5 @@ FILE_STORAGE = "local"
 
 JWT_ALLOWED_ISSUER = 'activityapi'
 JWT_PUBLIC_KEY_RSA_ACTIVITYAPI = os.getenv('JWT_PUBLIC_KEY_RSA_ACTIVITYAPI')
+JWT_ISSUER = os.getenv('JWT_ISSUER')
+JWT_PRIVATE_KEY_RSA_DOCUMENTSERVICE = os.getenv('JWT_PRIVATE_KEY_RSA_DOCUMENTSERVICE')

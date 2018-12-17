@@ -3,7 +3,7 @@
 import django.contrib.postgres.fields
 from django.db import migrations, models
 
-import documents.models
+import document.models
 import functools
 
 try:
@@ -17,7 +17,7 @@ except AttributeError:
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0003_auto_20180517_0832'),
+        ('document', '0003_auto_20180517_0832'),
     ]
 
     operations = [
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='file',
-            field=models.FileField(blank=True, null=True, storage=file_storage, upload_to=functools.partial(documents.models.make_filepath, *('file',), **{})),
+            field=models.FileField(blank=True, null=True, storage=file_storage, upload_to=functools.partial(document.models.make_filepath, *('file',), **{})),
         ),
         migrations.AlterField(
             model_name='document',

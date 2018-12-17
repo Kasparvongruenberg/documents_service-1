@@ -2,7 +2,7 @@
 
 import django.core.files.storage
 from django.db import migrations, models
-import documents.models
+import document.models
 import functools
 
 try:
@@ -16,14 +16,14 @@ except AttributeError:
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0007_auto_20180612_1440'),
+        ('document', '0007_auto_20180612_1440'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='document',
             name='thumbnail',
-            field=models.FileField(blank=True, null=True, storage=file_storage, upload_to=functools.partial(documents.models.make_filepath_thumbnail, *('file',), **{})),
+            field=models.FileField(blank=True, null=True, storage=file_storage, upload_to=functools.partial(document.models.make_filepath_thumbnail, *('file',), **{})),
         ),
         migrations.AlterField(
             model_name='document',

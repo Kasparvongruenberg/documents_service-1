@@ -1,4 +1,4 @@
-"""documents URL Configuration
+"""document URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
-from documents.views import document_download_view, document_thumbnail_view
+from document.views import document_download_view, document_thumbnail_view
 from rest_framework import permissions
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static

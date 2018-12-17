@@ -10,7 +10,7 @@ pipeline:
       event: [pull_request, push, tag]
     environment:
       - DATABASE_ENGINE=postgresql
-      - DATABASE_NAME=documents_service
+      - DATABASE_NAME=document_service
       - DATABASE_USER=root
       - DATABASE_PASSWORD=root
       - DATABASE_HOST=postgres
@@ -28,7 +28,7 @@ pipeline:
     image: plugins/docker
     insecure: true
     registry: registry.tola.io
-    repo: registry.tola.io/humanitec/documents_service
+    repo: registry.tola.io/humanitec/document_service
     file: Dockerfile
     auto_tag: true
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
@@ -50,7 +50,7 @@ services:
   postgres:
     image: postgres:9.6
     environment:
-      - POSTGRES_DB=documents_service
+      - POSTGRES_DB=document_service
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
