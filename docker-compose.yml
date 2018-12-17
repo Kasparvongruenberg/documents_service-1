@@ -61,17 +61,5 @@ services:
       JWT_ISSUER: "documentservice"
       SEARCH_SERVICE_URL: "http://searchservice.local:8001"
 
-  nginx_documents:
-    image: nginx:latest
-    container_name: nginx_documents
-    ports:
-    - "8001:8000"
-    volumes:
-    - .:/code
-    - ./docker/etc/nginx:/etc/nginx/conf.d
-    - static-content:/static
-    depends_on:
-    - postgres_document_service
-
 volumes:
   static-content:
