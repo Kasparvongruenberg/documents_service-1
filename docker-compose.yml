@@ -1,0 +1,77 @@
+version: "2.1"
+
+services:
+
+  postgres_document_service:
+    container_name: postgres_document_service
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: document_service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - /var/lib/postgresql/data/
+    restart: always
+
+  document_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: document_service
+    image: document_service
+    volumes:
+      - .:/code
+      - static-content:/static
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres_document_service
+    environment:
+      DATABASE_ENGINE: "postgresql"
+      DATABASE_NAME: "document_service"
+      DATABASE_USER: "root"
+      DATABASE_PASSWORD: "root"
+      DATABASE_HOST: "postgres_document_service"
+      DATABASE_PORT: "5432"
+      DEBUG: "True"
+      CORS_ORIGIN_WHITELIST: "*"
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      AWS_STORAGE_BUCKET_NAME: 'walhall-document-dev'
+      JWT_PUBLIC_KEY_RSA_ACTIVITYAPI: |-
+        -----BEGIN PUBLIC KEY-----
+        MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB
+        qhqvJu1hKPYn9HYd75c0gIDYHJ9lb7QwQvg44aO27104rDK0xSstzL0CAwEAAQ==
+        -----END PUBLIC KEY-----
+      JWT_PRIVATE_KEY_RSA_DOCUMENTSERVICE: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIBOQIBAAJBAJurYkLpbKtYT1lPfuQN01KlWvLMs2nQwF1QB0d6CfUMrP9P2Ox0
+        C+eYXMLUzoVVdf7hm3dnbylq0XWulquHDVcCAwEAAQJAFfbdm3FSGu8P6xsTXVwy
+        CAQ6y+1kFzcUHVZwYH5wrzmNTUs504EbZOp8cnDXFhUnHyRYyOFV1azuIKC/2Jg6
+        AQIhAMkvIQ2EsAPh/WEnhOpf6OJS5pF8smBuxoONkg76HckBAiEAxhWLwZzIoTpn
+        QgLC/Uk2uXsar0Ab/zmxdcHTtM85vlcCICj/NKIXlvLDm6mvrvM/5iowsJGXMpZa
+        HJP0Rn5M08MBAiBT444Tif2h4mUWnKrNr/MALHWJoMH6nglc0KCDI3vV8wIgLEsV
+        Ae0qvOLx6prf60A0IyTAsD71I0fNsNc+C6QuZv8=
+        -----END RSA PRIVATE KEY-----
+      JWT_PUBLIC_KEY_RSA_DOCUMENTSERVICE: |-
+        -----BEGIN PUBLIC KEY-----
+        MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJurYkLpbKtYT1lPfuQN01KlWvLMs2nQ
+        wF1QB0d6CfUMrP9P2Ox0C+eYXMLUzoVVdf7hm3dnbylq0XWulquHDVcCAwEAAQ==
+        -----END PUBLIC KEY-----
+      JWT_ISSUER: "documentservice"
+      SEARCH_SERVICE_URL: "http://searchservice.local:8001"
+
+  nginx_documents:
+    image: nginx:latest
+    container_name: nginx_documents
+    ports:
+    - "8001:8000"
+    volumes:
+    - .:/code
+    - ./docker/etc/nginx:/etc/nginx/conf.d
+    - static-content:/static
+    depends_on:
+    - postgres_document_service
+
+volumes:
+  static-content:
