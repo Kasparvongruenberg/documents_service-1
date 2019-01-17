@@ -54,8 +54,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
-def document_thumbnail_view(request, file_id):
-    document = Document.objects.get(pk=file_id)
+def document_thumbnail_view(request, id):
+    document = Document.objects.get(pk=id)
     data = document.thumbnail
 
     if not data:
@@ -71,8 +71,8 @@ def document_thumbnail_view(request, file_id):
 
 
 @api_view(['GET'])
-def document_download_view(request, file_id):
-    document = Document.objects.get(pk=file_id)
+def document_download_view(request, id):
+    document = Document.objects.get(pk=id)
     data = document.file
 
     if not data:
