@@ -433,7 +433,7 @@ class DocumentProxyViewTest(TestCase):
         document = mfactories.Document(file_name="test.png")
         request = self.factory.get('')
         request.user = self.user
-        response = document_download_view(request, file_id=document.pk)
+        response = document_download_view(request, id=document.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("Content-Length"), '1')
         self.assertEqual(response.get("Content-Disposition"),
@@ -456,7 +456,7 @@ class DocumentProxyViewTest(TestCase):
         document = mfactories.Document(file_name="file.png")
         request = self.factory.get('')
         request.user = self.user
-        response = document_thumbnail_view(request, file_id=document.pk)
+        response = document_thumbnail_view(request, id=document.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("Content-Length"), '1')
         self.assertEqual(response.get("Content-Disposition"),
@@ -473,7 +473,7 @@ class DocumentProxyViewTest(TestCase):
         document = mfactories.Document(file_name="test.jpg")
         request = self.factory.get('')
         request.user = self.user
-        response = document_download_view(request, file_id=document.pk)
+        response = document_download_view(request, id=document.pk)
         self.assertEqual(response.status_code, 404)
         self.assertIsNone(response.get("Content-Length"))
         self.assertIsNone(response.get("Content-Disposition"))
@@ -485,7 +485,7 @@ class DocumentProxyViewTest(TestCase):
         document = mfactories.Document(file_name="test.jpg")
         request = self.factory.get('')
         request.user = self.user
-        response = document_thumbnail_view(request, file_id=document.pk)
+        response = document_thumbnail_view(request, id=document.pk)
         self.assertEqual(response.status_code, 404)
         self.assertIsNone(response.get("Content-Length"))
         self.assertIsNone(response.get("Content-Disposition"))
