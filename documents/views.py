@@ -1,13 +1,26 @@
 from rest_framework import viewsets, filters
 from rest_framework.decorators import api_view
+from django.utils.decorators import method_decorator
+from rest_framework.parsers import MultiPartParser
 
+from .autoschema import DocumentSwaggerAutoSchema
 from .models import Document
 from .serializers import DocumentSerializer
 import django_filters
 from django.http import FileResponse
 from django.http import HttpResponseNotFound
 
+from drf_yasg.utils import swagger_auto_schema
 
+DOCUMENT_AUTO_SCHEMA = swagger_auto_schema(
+        auto_schema=DocumentSwaggerAutoSchema,
+        parser_classes=(MultiPartParser,),
+)
+
+
+@method_decorator(name='create', decorator=DOCUMENT_AUTO_SCHEMA)
+@method_decorator(name='update', decorator=DOCUMENT_AUTO_SCHEMA)
+@method_decorator(name='partial_update', decorator=DOCUMENT_AUTO_SCHEMA)
 class DocumentViewSet(viewsets.ModelViewSet):
     """
     Documents.
