@@ -26,7 +26,8 @@ class DocumentListViewsTest(TestCase):
         view = DocumentViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertTrue('results' in response.data)
+        self.assertEqual(response.data['results'], [])
 
     def test_list_documents(self):
         request = self.factory.get('')
@@ -36,9 +37,9 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data['results']), 1)
 
-        document_data = response.data[0]
+        document_data = response.data['results'][0]
         self.assertTrue('id' in document_data)
         self.assertEqual(document_data['file_name'], 'test.jpg')
 
@@ -59,12 +60,12 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        documents_data = response.data['results']
+        self.assertEqual(len(documents_data), 2)
 
-        document_data = response.data[0]
-        self.assertEqual(document_data['file_type'], 'png')
-        self.assertEqual(response.data[0]['file_name'], 'Document1.png')
-        self.assertEqual(response.data[1]['file_name'], 'Document2.png')
+        self.assertEqual(documents_data[0]['file_type'], 'png')
+        self.assertEqual(documents_data[0]['file_name'], 'Document1.png')
+        self.assertEqual(documents_data[1]['file_name'], 'Document2.png')
 
     def test_list_documents_filter_by_related_wf1(self):
         wf1uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
@@ -82,10 +83,11 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        documents_data = response.data['results']
+        self.assertEqual(len(documents_data), 2)
 
-        self.assertEqual(response.data[0]['file_name'], 'Document1.png')
-        self.assertEqual(response.data[1]['file_name'], 'Document2.png')
+        self.assertEqual(documents_data[0]['file_name'], 'Document1.png')
+        self.assertEqual(documents_data[1]['file_name'], 'Document2.png')
 
     def test_list_documents_filter_by_related_wf2(self):
         wf2uuids = [str(uuid.uuid4()), str(uuid.uuid4())]
@@ -103,10 +105,11 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        documents_data = request.data['results']
+        self.assertEqual(len(documents_data), 2)
 
-        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
-        self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
+        self.assertEqual(documents_data[0]['file_name'], 'Document2.png')
+        self.assertEqual(documents_data[1]['file_name'], 'Document3.jpg')
 
     def test_list_documents_filter_by_related_contact(self):
         contact_uuid = str(uuid.uuid4())
@@ -124,10 +127,11 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        documents_data = request.data['result']
+        self.assertEqual(len(documents_data), 2)
 
-        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
-        self.assertEqual(response.data[1]['file_name'], 'Document3.jpg')
+        self.assertEqual(documents_data[0]['file_name'], 'Document2.png')
+        self.assertEqual(documents_data[1]['file_name'], 'Document3.jpg')
 
     def test_paginate_large_result_sets(self):
         for i in range(0, 32):
