@@ -1,0 +1,2 @@
+[flake8]
+exclude = settings,migrations,manage.py,wsgi.py

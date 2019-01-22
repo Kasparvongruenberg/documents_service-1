@@ -18,21 +18,22 @@ docker-compose -f docker-compose-dev.yml up # -d for detached
 User: `admin`
 Password: `admin`.
 
-To run the tests:
+To run the tests only once:
 
 ```bash
-docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm documents_service python manage.py test # --keepdb to run second time faster
+docker-compose -f docker-compose-dev.yml run --entrypoint 'bash scripts/run-tests.sh' --rm documents_service
+```
+ (`bash scripts/run-tests.sh --keepdb` to run second time faster)
+
+To run the tests only once:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint 'bash scripts/run-tests.sh --bash-on-finish' --rm documents_service
 ```
 
-To run flake8:
-
+To run bash:
 ```bash
-docker-compose -f docker-compose-dev.yml run --entrypoint 'flake8 --exclude=settings,migrations' documents_service
-```
-
-To run bash
-```bash
-docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm documents_service bash
+docker-compose -f docker-compose-dev.yml run --entrypoint 'bash' --rm documents_service
 ```
 
 ## Deploy to server
