@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from io import BytesIO
 import uuid
 
+from PIL import Image
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.core.files.base import ContentFile
+from django.conf import settings
 import pytz
+import boto3
+from moto import mock_s3
 
 from ..models import Document
-from PIL import Image
-from io import BytesIO
-from django.core.files.base import ContentFile
 
 
 class DocumentTest(TestCase):
@@ -267,7 +270,11 @@ class DocumentTest(TestCase):
         self.assertEqual(document_db.file_name, file_name)
         self.assertEqual(document_db.contact_uuid, contact_uuid)
 
+    @mock_s3
     def test_document_save_generates_thumbnail(self):
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
+
         file_name = "Test.jpg"
         contact_uuid = str(uuid.uuid4())
 

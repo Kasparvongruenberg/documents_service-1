@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import uuid
+import re
 
 from django.test import TestCase
-from rest_framework.test import APIRequestFactory
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
+from rest_framework.test import APIRequestFactory
+import boto3
+from moto import mock_s3
 
 from . import model_factories as mfactories
 from ..models import Document
 from ..views import DocumentViewSet
-import re
-import mock
-from django.core.files import File
-from django.test.utils import override_settings
 
 
+@mock_s3
 class DocumentListViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
 
     def test_list_empty(self):
         request = self.factory.get('')
@@ -105,7 +109,7 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        documents_data = request.data['results']
+        documents_data = response.data['results']
         self.assertEqual(len(documents_data), 2)
 
         self.assertEqual(documents_data[0]['file_name'], 'Document2.png')
@@ -127,7 +131,7 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        documents_data = request.data['result']
+        documents_data = response.data['results']
         self.assertEqual(len(documents_data), 2)
 
         self.assertEqual(documents_data[0]['file_name'], 'Document2.png')
@@ -195,21 +199,16 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 3)
+        documents_data = response.data['results']
+        self.assertEqual(len(documents_data), 3)
 
-        self.assertEqual(response.data[0]['file_name'], 'Document2.png')
-        self.assertEqual(response.data[1]['file_name'], 'Document1.png')
-        self.assertEqual(response.data[2]['file_name'], 'Document0.png')
+        self.assertEqual(documents_data[0]['file_name'], 'Document2.png')
+        self.assertEqual(documents_data[1]['file_name'], 'Document1.png')
+        self.assertEqual(documents_data[2]['file_name'], 'Document0.png')
 
-    @override_settings(AWS_ACCESS_KEY_ID='dummy')
-    @override_settings(AWS_SECRET_ACCESS_KEY='ex123')
-    @override_settings(BOTO_S3_BUCKET='example')
-    @override_settings(BOTO_S3_HOST='example.com')
     def test_list_documents_url(self):
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
         # Mock with pdf since image files will trigger thumbnail generation
-        file_mock.name = 'test1.pdf'
-
+        file_mock = SimpleUploadedFile('test1.pdf', b'some content')
         doc1 = mfactories.Document(file_name='Document1.pdf',
                                    file=file_mock)
 
@@ -221,13 +220,14 @@ class DocumentListViewsTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        documents_data = response.data['results']
+        self.assertEqual(len(documents_data), 2)
 
         url = "/file/{}".format(doc1.pk)
         expected_file = request.build_absolute_uri(url)
 
-        self.assertEquals(response.data[0]['file'], expected_file)
-        self.assertIsNone(response.data[1]['file'])
+        self.assertEquals(documents_data[0]['file'], expected_file)
+        self.assertIsNone(documents_data[1]['file'])
 
 
 class DocumentRetrieveViewsTest(TestCase):
@@ -250,10 +250,13 @@ class DocumentRetrieveViewsTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
 
+@mock_s3
 class DocumentCreateViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
 
     def test_create_document_minimal(self):
         contact_uuid = str(uuid.uuid4())
