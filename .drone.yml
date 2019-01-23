@@ -4,7 +4,7 @@ pipeline:
     image: python:${PYTHON_VERSION}
     commands:
       - bash scripts/tcp-port-wait.sh postgres 5432
-      - bash scripts/run-tests.sh --ci
+      # - bash scripts/run-tests.sh --ci
     when:
       event: [pull_request, push, tag]
     environment:
