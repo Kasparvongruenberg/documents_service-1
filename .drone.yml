@@ -14,6 +14,9 @@ pipeline:
       - DATABASE_PASSWORD=root
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
+      - AWS_ACCESS_KEY_ID=''
+      - AWS_SECRET_ACCESS_KEY=''
+      - AWS_STORAGE_BUCKET_NAME='example'
 
   bandit:
     image: python:${PYTHON_VERSION}
