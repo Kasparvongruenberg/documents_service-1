@@ -3,9 +3,8 @@ pipeline:
   test:
     image: python:${PYTHON_VERSION}
     commands:
-      - pip install -r requirements/ci.txt
-      - flake8 --exclude=settings,migrations
-      - ./tcp-port-wait.sh postgres 5432
+      - bash scripts/tcp-port-wait.sh postgres 5432
+      # - bash scripts/run-tests.sh --ci
     when:
       event: [pull_request, push, tag]
     environment:
