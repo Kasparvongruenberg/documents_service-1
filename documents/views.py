@@ -10,6 +10,7 @@ import django_filters
 from django.http import FileResponse
 from django.http import HttpResponseNotFound
 
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 DOCUMENT_AUTO_SCHEMA = swagger_auto_schema(
@@ -29,6 +30,15 @@ class DocumentViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return super(DocumentViewSet, self).update(request, *args, **kwargs)
 
+    workflowlevel1_uuid = openapi.Parameter(
+        'workflowlevel1_uuid', openapi.IN_QUERY,
+        description='Filter by workflowlevel1_uuid.', type=openapi.TYPE_STRING)
+    workflowlevel2_uuid = openapi.Parameter(
+        'workflowlevel2_uuid', openapi.IN_QUERY,
+        description='Filter by workflowlevel2_uuid.', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[workflowlevel1_uuid,
+                                            workflowlevel2_uuid, ])
     def list(self, request, *args, **kwargs):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
