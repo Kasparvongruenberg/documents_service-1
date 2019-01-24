@@ -38,7 +38,9 @@ services:
       DATABASE_PORT: "5432"
       DEBUG: "True"
       CORS_ORIGIN_WHITELIST: "*"
-      AWS_STORAGE_BUCKET_NAME: 'kupfer-documents-test'
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      AWS_STORAGE_BUCKET_NAME: 'example'
       JWT_PUBLIC_KEY_RSA_BIFROST: |-
         -----BEGIN PUBLIC KEY-----
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB

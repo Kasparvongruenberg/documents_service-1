@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.conf import settings
 from rest_framework.test import APIRequestFactory
+import boto3
+from moto import mock_s3
 
 from . import model_factories as mfactories
-
 from ..serializers import DocumentSerializer
 
-import mock
-from django.core.files import File
-from django.test.utils import override_settings
 
-
+@mock_s3
 class DocumentSerializerTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = mfactories.User()
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
 
     def test_contains_expected_fields(self):
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
         # Mock with pdf since image files will trigger thumbnail generation
-        file_mock.name = 'test1.pdf'
+        file_mock = SimpleUploadedFile('test1.pdf', b'some content')
 
         document = mfactories.Document(file_name='Document1.pdf',
                                        file=file_mock)
@@ -47,14 +48,9 @@ class DocumentSerializerTest(TestCase):
 
         self.assertEqual(set(data.keys()), set(keys))
 
-    @override_settings(AWS_ACCESS_KEY_ID='dummy')
-    @override_settings(AWS_SECRET_ACCESS_KEY='ex123')
-    @override_settings(BOTO_S3_BUCKET='example')
-    @override_settings(BOTO_S3_HOST='example.com')
     def test_mock_s3(self):
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
         # Mock with pdf since image files will trigger thumbnail generation
-        file_mock.name = 'test1.pdf'
+        file_mock = SimpleUploadedFile('test1.pdf', b'some content')
 
         self.document = mfactories.Document(file_name='Document1.pdf',
                                             file=file_mock)

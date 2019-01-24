@@ -4,7 +4,7 @@ pipeline:
     image: python:${PYTHON_VERSION}
     commands:
       - bash scripts/tcp-port-wait.sh postgres 5432
-      # - bash scripts/run-tests.sh --ci
+      - bash scripts/run-tests.sh --ci
     when:
       event: [pull_request, push, tag]
     environment:
@@ -14,6 +14,9 @@ pipeline:
       - DATABASE_PASSWORD=root
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
+      - AWS_ACCESS_KEY_ID=example
+      - AWS_SECRET_ACCESS_KEY=example
+      - AWS_STORAGE_BUCKET_NAME=example
 
   bandit:
     image: python:${PYTHON_VERSION}
