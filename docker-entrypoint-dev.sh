@@ -13,4 +13,4 @@ python manage.py collectstatic --no-input
 
 echo $(date -u) "- Running the server"
 gunicorn -b 0.0.0.0:8080 documents-service.wsgi -w 2 \
- --timeout 120 --reload --log-level debug
+ --timeout 120 --reload

@@ -11,8 +11,6 @@ services:
       POSTGRES_PASSWORD: root
     volumes:
       - /var/lib/postgresql/data/
-    ports:
-      - "5432:5432"
     restart: always
 
   documents_service:
@@ -20,16 +18,17 @@ services:
       context: .
       dockerfile: Dockerfile
     entrypoint: bash /code/docker-entrypoint-dev.sh
-    container_name: documents_service
+    container_name: documentsservice
     image: documents_service
     volumes:
       - .:/code
       - static-content:/static
     ports:
-      - "8080:8080"
+      - "8004:8080"
     depends_on:
       - postgres_documents_service
     environment:
+      ALLOWED_HOSTS: "*"
       DATABASE_ENGINE: "postgresql"
       DATABASE_NAME: "documents_service"
       DATABASE_USER: "root"
@@ -46,8 +45,6 @@ services:
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB
         qhqvJu1hKPYn9HYd75c0gIDYHJ9lb7QwQvg44aO27104rDK0xSstzL0CAwEAAQ==
         -----END PUBLIC KEY-----
-    env_file:
-      - .env
 
   nginx_documents:
     image: nginx:latest
