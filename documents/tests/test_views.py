@@ -223,7 +223,7 @@ class DocumentListViewsTest(TestCase):
         documents_data = response.data['results']
         self.assertEqual(len(documents_data), 2)
 
-        url = "/file/{}".format(doc1.pk)
+        url = "/documents/file/{}/".format(doc1.pk)
 
         self.assertEquals(documents_data[0]['file'], url)
         self.assertIsNone(documents_data[1]['file'])
