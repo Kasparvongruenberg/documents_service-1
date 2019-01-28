@@ -224,9 +224,8 @@ class DocumentListViewsTest(TestCase):
         self.assertEqual(len(documents_data), 2)
 
         url = "/file/{}".format(doc1.pk)
-        expected_file = request.build_absolute_uri(url)
 
-        self.assertEquals(documents_data[0]['file'], expected_file)
+        self.assertEquals(documents_data[0]['file'], url)
         self.assertIsNone(documents_data[1]['file'])
 
 
