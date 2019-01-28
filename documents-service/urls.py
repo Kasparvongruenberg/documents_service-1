@@ -43,9 +43,9 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0),
          name='schema-swagger-ui'),
     path('', include('api.urls')),
-    re_path(r'^file/(?P<id>\w+)$', document_download_view),
-    re_path(r'^thumbnail/(?P<id>\w+)$', document_thumbnail_view),
     path('health_check/', include('health_check.urls')),
+    re_path(r'^file/(?P<id>\w+)/$', document_download_view),
+    re_path(r'^thumbnail/(?P<id>\w+)/$', document_thumbnail_view),
 ]
 
 urlpatterns += staticfiles_urlpatterns() \
