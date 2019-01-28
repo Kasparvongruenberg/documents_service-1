@@ -159,5 +159,5 @@ class Document(models.Model):
         self.thumbnail = ContentFile(temp_thumb.read(),
                                      name=self.file.name)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{} {}'.format(self.file_type, self.file_name)
