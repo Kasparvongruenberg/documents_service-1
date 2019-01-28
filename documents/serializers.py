@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 
 
 class Base64FileField(serializers.FileField):
-    base_url = '/file/{}'
+    base_url = '/file/{}/'
 
     def to_representation(self, value):
         if not value:
@@ -32,7 +32,7 @@ class Base64FileField(serializers.FileField):
 
 
 class MaskedThumbnailField(serializers.ReadOnlyField):
-    base_url = '/thumbnail/{}'
+    base_url = '/thumbnail/{}/'
 
     def to_representation(self, value):
         if not value:
