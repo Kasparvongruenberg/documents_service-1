@@ -55,7 +55,7 @@ class DocumentSerializerTest(TestCase):
         self.document = mfactories.Document(file_name='Document1.pdf',
                                             file=file_mock)
 
-        expected_file = "/documents/file/{}/".format(self.document.pk)
+        expected_file = "/file/{}/".format(self.document.pk)
 
         serializer = DocumentSerializer(instance=self.document)
         self.assertEquals(serializer.data['file'], expected_file)
