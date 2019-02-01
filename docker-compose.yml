@@ -22,7 +22,6 @@ services:
     image: documents_service
     volumes:
       - .:/code
-      - static-content:/static
     ports:
       - "8004:8080"
     depends_on:
@@ -45,18 +44,3 @@ services:
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB
         qhqvJu1hKPYn9HYd75c0gIDYHJ9lb7QwQvg44aO27104rDK0xSstzL0CAwEAAQ==
         -----END PUBLIC KEY-----
-
-  nginx_documents:
-    image: nginx:latest
-    container_name: nginx_documents
-    ports:
-    - "8001:8000"
-    volumes:
-    - .:/code
-    - ./docker/etc/nginx:/etc/nginx/conf.d
-    - static-content:/static
-    depends_on:
-    - postgres_documents_service
-
-volumes:
-  static-content:

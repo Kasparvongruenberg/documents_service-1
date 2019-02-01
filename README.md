@@ -3,6 +3,7 @@
 Microservice for the documents API. It allows the user to store static files
 in Amazon S3.
 
+
 ## Deploy locally via Docker
 
 Build first the images:
@@ -11,14 +12,19 @@ Build first the images:
 docker-compose build # --no-cache to force deps installation
 ```
 
-To run the webserver (go to 127.0.0.1:8004):
+To run the webserver:
 
 ```bash
 docker-compose up # -d for detached
 ```
 
-User: `admin`
-Password: `admin`.
+Open your browser with URL `http://localhost:8004`. For the admin panel
+`http://localhost:8004/admin` (user: `admin`, password: `admin`).
+
+The documentation can be consulted in `http://localhost:8004/docs`.
+
+
+### Development utils
 
 To run the tests only once:
 
@@ -38,6 +44,7 @@ To run bash:
 ```bash
 docker-compose run --entrypoint 'bash' --rm documents_service
 ```
+
 
 ## Deploy to server
 
