@@ -17,6 +17,7 @@ pipeline:
       - AWS_ACCESS_KEY_ID=example
       - AWS_SECRET_ACCESS_KEY=example
       - AWS_STORAGE_BUCKET_NAME=example
+      - SECRET_KEY=nothing
 
   bandit:
     image: python:${PYTHON_VERSION}
