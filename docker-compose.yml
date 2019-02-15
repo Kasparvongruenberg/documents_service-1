@@ -28,6 +28,10 @@ services:
       - postgres_documents_service
     environment:
       ALLOWED_HOSTS: "*"
+      AWS_ACCESS_KEY_ID: ''
+      AWS_SECRET_ACCESS_KEY: ''
+      AWS_STORAGE_BUCKET_NAME: 'example'
+      CORS_ORIGIN_WHITELIST: "*"
       DATABASE_ENGINE: "postgresql"
       DATABASE_NAME: "documents_service"
       DATABASE_USER: "root"
@@ -35,12 +39,9 @@ services:
       DATABASE_HOST: "postgres_documents_service"
       DATABASE_PORT: "5432"
       DEBUG: "True"
-      CORS_ORIGIN_WHITELIST: "*"
-      AWS_ACCESS_KEY_ID: ''
-      AWS_SECRET_ACCESS_KEY: ''
-      AWS_STORAGE_BUCKET_NAME: 'example'
       JWT_PUBLIC_KEY_RSA_BIFROST: |-
         -----BEGIN PUBLIC KEY-----
         MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALFc9NFZaOaSwUMPNektbtJqEjYZ6IRB
         qhqvJu1hKPYn9HYd75c0gIDYHJ9lb7QwQvg44aO27104rDK0xSstzL0CAwEAAQ==
         -----END PUBLIC KEY-----
+      SECRET_KEY: "axcdb=mtcc7q1cym@oox(lyrz1ncz-(w+(#&u7l-&)7a8wvxyz"
