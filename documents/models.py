@@ -52,10 +52,10 @@ def make_filepath_thumbnail(field_name, instance, filename):
 class Document(models.Model):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
 
-    file_description = models.CharField(max_length=50,
+    file_description = models.CharField(max_length=200,
                                         help_text='File Description',
                                         null=True, blank=True)
-    file_name = models.CharField(max_length=50, help_text='Filename')
+    file_name = models.CharField(max_length=200, help_text='Filename')
     file_type = models.CharField(
         max_length=30, choices=FILE_TYPE_CHOICES,
         null=True, blank=True,
